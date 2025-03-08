@@ -3,9 +3,9 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { fonts } from '../../styles/typography';
 
-const StreakBanner = ({ streak = 68, pointsToday = 15, onContinue }) => {
+const StreakBanner = ({ streak = 68, pointsToday = 15 }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginBottom: 0 }]}>
       <View style={styles.banner}>
         {/* Streak Info */}
         <View style={styles.streakInfo}>
@@ -23,16 +23,6 @@ const StreakBanner = ({ streak = 68, pointsToday = 15, onContinue }) => {
           <Text style={styles.pointsText}>+{pointsToday} today</Text>
         </View>
       </View>
-
-      {/* Continue Button */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          style={styles.continueButton}
-          onPress={onContinue}
-        >
-          <Text style={styles.buttonText}>Continue Daily Practice</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -44,7 +34,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#DBEAFE',
     overflow: 'hidden',
-    marginBottom: 20,
   },
   banner: {
     padding: 16,
@@ -85,24 +74,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '500',
-  },
-  buttonContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#DBEAFE',
-  },
-  continueButton: {
-    backgroundColor: '#2563EB',
-    padding: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: fonts.georgia,
-  },
+  }
 });
 
 export default StreakBanner;

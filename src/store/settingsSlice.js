@@ -49,4 +49,7 @@ export const {
   setSoundEffects,
 } = settingsSlice.actions;
 
+// Selectors
+export const selectMode = (state) => state.settings.mode;
+
 export default settingsSlice.reducer;

@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: fonts.righteous,
+    fontFamily: fonts.georgia,
   },
   iconContainer: {
     width: 64,

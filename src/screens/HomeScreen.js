@@ -99,10 +99,9 @@ const HomeScreen = () => {
       >
         {/* Streak Banner */}
         <View style={styles.section}>
-          <StreakBanner 
+          <StreakBanner
             streak={68}
             pointsToday={15}
-            onContinue={handleContinueLearning}
           />
         </View>
 
