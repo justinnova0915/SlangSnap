@@ -1,81 +1,42 @@
 import React from 'react';
-import { StyleSheet, Text, View, Switch, TouchableOpacity } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  setMode,
-  toggleNotifications,
-  toggleSound,
-  selectMode,
-  selectNotifications,
-  selectSound
-} from '../src/store/settingsSlice';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { fonts } from '../src/styles/typography';
 
-export default function SettingsScreen({ navigation }) {
-  const dispatch = useDispatch();
-  const mode = useSelector(selectMode);
-  const notificationsEnabled = useSelector(selectNotifications);
-  const soundEffectsEnabled = useSelector(selectSound);
-
-  const handleModeSwitch = () => {
-    const newMode = mode === 'zoomer' ? 'classic' : 'zoomer';
-    dispatch(setMode(newMode));
-    navigation.replace(newMode === 'zoomer' ? 'HomeZoomer' : 'HomeClassic');
-  };
-
-  const handleNotificationsToggle = () => {
-    dispatch(toggleNotifications());
-  };
-
-  const handleSoundToggle = () => {
-    dispatch(toggleSound());
-  };
+export default function SettingsScreen() {
+  const navigation = useNavigation();
+  const mode = useSelector(state => state.settings.mode);
+  const preferences = useSelector(state => state.settings.preferences);
 
   return (
     <View style={styles.container}>
-      <View style={styles.statusBar}>
-        <Text style={styles.statusText}>9:41</Text>
+      <Text style={styles.title}>Settings</Text>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Current Mode</Text>
+        <Text style={styles.modeText}>
+          {mode === 'zoomer' ? '🔥 Zoomer Mode' : '📚 Classic Mode'}
+        </Text>
       </View>
-      <View style={styles.content}>
-        <Text style={styles.header}>Settings</Text>
-        
-        {/* Notifications Toggle */}
-        <View style={styles.settingRow}>
-          <Text style={styles.settingLabel}>Notifications</Text>
-          <Switch
-            value={notificationsEnabled}
-            onValueChange={handleNotificationsToggle}
-            trackColor={{ false: '#777', true: mode === 'zoomer' ? '#f02fc2' : '#3b82f6' }}
-            thumbColor={notificationsEnabled ? '#fff' : '#ccc'}
-          />
-        </View>
 
-        {/* Sound Effects Toggle */}
-        <View style={styles.settingRow}>
-          <Text style={styles.settingLabel}>Sound Effects</Text>
-          <Switch
-            value={soundEffectsEnabled}
-            onValueChange={handleSoundToggle}
-            trackColor={{ false: '#777', true: mode === 'zoomer' ? '#f02fc2' : '#3b82f6' }}
-            thumbColor={soundEffectsEnabled ? '#fff' : '#ccc'}
-          />
-        </View>
-
-        {/* Mode Switcher */}
-        <View style={styles.modeSection}>
-          <Text style={styles.modeLabel}>Current Vibe: {mode === 'zoomer' ? 'Zoomer' : 'Classic'}</Text>
-          <TouchableOpacity
-            style={[
-              styles.modeButton,
-              mode === 'zoomer' ? styles.buttonZoomer : styles.buttonClassic,
-            ]}
-            onPress={handleModeSwitch}
-          >
-            <Text style={styles.buttonText}>
-              Switch to {mode === 'zoomer' ? 'Classic' : 'Zoomer'} Mode
-            </Text>
-          </TouchableOpacity>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Preferences</Text>
+        <View style={styles.preferencesContainer}>
+          {preferences?.interests?.map((interest, index) => (
+            <View key={index} style={styles.interestTag}>
+              <Text style={styles.interestText}>{interest}</Text>
+            </View>
+          ))}
         </View>
       </View>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Preferences')}
+      >
+        <Text style={styles.buttonText}>Edit Preferences</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -84,61 +45,54 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#111827',
+    padding: 24,
   },
-  statusBar: {
-    height: 28,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  statusText: {
+  title: {
+    fontFamily: fonts.righteous,
+    fontSize: 32,
     color: '#fff',
-    fontSize: 12,
-    fontWeight: '500',
+    marginBottom: 24,
   },
-  content: {
-    flex: 1,
-    padding: 20,
+  section: {
+    marginBottom: 24,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  sectionTitle: {
+    fontFamily: fonts.righteous,
+    fontSize: 18,
+    color: '#D1D5DB',
+    marginBottom: 12,
+  },
+  modeText: {
+    fontFamily: fonts.righteous,
+    fontSize: 20,
     color: '#fff',
-    marginBottom: 30,
   },
-  settingRow: {
+  preferencesContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
+    flexWrap: 'wrap',
+    gap: 8,
   },
-  settingLabel: {
-    fontSize: 18,
+  interestTag: {
+    backgroundColor: '#3B82F6',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+  },
+  interestText: {
+    fontFamily: fonts.righteous,
+    fontSize: 14,
     color: '#fff',
   },
-  modeSection: {
-    marginTop: 40,
-    alignItems: 'center',
-  },
-  modeLabel: {
-    fontSize: 18,
-    color: '#fff',
-    marginBottom: 15,
-  },
-  modeButton: {
+  button: {
+    backgroundColor: '#3B82F6',
     paddingVertical: 12,
-    paddingHorizontal: 24,
     borderRadius: 8,
-  },
-  buttonZoomer: {
-    backgroundColor: '#ec4899',
-  },
-  buttonClassic: {
-    backgroundColor: '#1e40af',
+    alignItems: 'center',
+    marginTop: 24,
   },
   buttonText: {
+    fontFamily: fonts.righteous,
+    fontSize: 18,
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
   },
 });

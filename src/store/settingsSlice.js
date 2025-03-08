@@ -1,30 +1,52 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  mode: 'zoomer', // Default mode
-  notifications: true,
-  soundEnabled: true,
+  mode: null, // 'zoomer' or 'classic'
+  preferences: {
+    interests: [],
+    notifications: {
+      daily: false,
+      streaks: false,
+      community: false,
+    },
+    soundEffects: false,
+  },
 };
 
 const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
-    setMode: (state, action) => {
+    setMode(state, action) {
       state.mode = action.payload;
     },
-    toggleNotifications: (state) => {
-      state.notifications = !state.notifications;
+    setPreferences(state, action) {
+      state.preferences = {
+        ...state.preferences,
+        ...action.payload,
+      };
     },
-    toggleSound: (state) => {
-      state.soundEnabled = !state.soundEnabled;
+    setInterests(state, action) {
+      state.preferences.interests = action.payload;
+    },
+    setNotificationSettings(state, action) {
+      state.preferences.notifications = {
+        ...state.preferences.notifications,
+        ...action.payload,
+      };
+    },
+    setSoundEffects(state, action) {
+      state.preferences.soundEffects = action.payload;
     },
   },
 });
 
-export const { setMode, toggleNotifications, toggleSound } = settingsSlice.actions;
-export const selectMode = (state) => state.settings.mode;
-export const selectNotifications = (state) => state.settings.notifications;
-export const selectSound = (state) => state.settings.soundEnabled;
+export const {
+  setMode,
+  setPreferences,
+  setInterests,
+  setNotificationSettings,
+  setSoundEffects,
+} = settingsSlice.actions;
 
 export default settingsSlice.reducer;
