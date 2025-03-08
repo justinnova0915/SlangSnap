@@ -4,11 +4,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useRef } from 'react';
 import { Animated } from 'react-native';
-import { fonts } from '../src/styles/typography';
-import { GlitchText } from '../src/components/shared/GlitchText';
+import { fonts } from '../styles/typography';
+import { GlitchText } from '../components/shared/GlitchText';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useDispatch } from 'react-redux';
-import { setMode } from '../src/store/settingsSlice';
+import { setMode } from '../store/settingsSlice';
 
 const { width } = Dimensions.get('window');
 

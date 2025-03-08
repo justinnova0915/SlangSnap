@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
   },
   title: {
-    fontFamily: fonts.righteous,
+    fontFamily: fonts.georgia,
     fontSize: 16,
     color: '#1F2937',
     marginBottom: 8,

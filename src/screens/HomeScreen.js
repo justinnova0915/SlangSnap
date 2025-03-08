@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, StatusBar, SafeAreaView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { fonts } from '../styles/typography';
@@ -69,7 +69,7 @@ const HomeScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
       
       {/* Header */}
@@ -159,7 +159,7 @@ const HomeScreen = () => {
           />
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E5E7EB',
   },
   headerTitle: {
-    fontFamily: fonts.righteous,
+    fontFamily: fonts.georgia,
     fontSize: 18,
     color: '#1F2937',
     marginBottom: 4,

@@ -9,19 +9,28 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fonts } from './src/styles/typography';
+import * as Font from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
 // Import screens
-import WelcomeScreen from './screens/WelcomeScreen';
-import StylePickerScreen from './screens/StylePickerScreen';
-import PreferencesScreen from './screens/PreferencesScreen';
-import FirstSnapScreen from './screens/FirstSnapScreen';
+import WelcomeScreen from './src/screens/WelcomeScreen';
+import StylePickerScreen from './src/screens/StylePickerScreen';
+import PreferencesScreen from './src/screens/PreferencesScreen';
+import FirstSnapScreen from './src/screens/FirstSnapScreen';
 import HomeScreen from './src/screens/HomeScreen';
-import VideoPlayerScreen from './screens/VideoPlayerScreen';
-import VoiceRecordingScreen from './screens/VoiceRecordingScreen';
-import SettingsScreen from './screens/SettingsScreen';
+import VideoPlayerScreen from './src/screens/VideoPlayerScreen';
+import VoiceRecordingScreen from './src/screens/VoiceRecordingScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import StashScreen from './src/screens/StashScreen';
 import { StyleTestScreen } from './src/screens/StyleTestScreen';
+
+const loadFonts = async () => {
+  await Font.loadAsync({
+    Righteous: require('./src/assets/fonts/Righteous.ttf'),
+    PermanentMarker: require('./src/assets/fonts/PermanentMarker.ttf'),
+  });
+};
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -94,6 +103,11 @@ function ClassicTabNavigator() {
 
 export default function App() {
   const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
+  const [isFontLoaded, setIsFontLoaded] = useState(false);
+
+  useEffect(() => {
+    loadFonts().then(() => setIsFontLoaded(true));
+  }, []);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -102,8 +116,8 @@ export default function App() {
 
   const checkOnboardingStatus = async () => {
     try {
-      const status = await AsyncStorage.getItem(ONBOARDING_COMPLETE);
-      setIsOnboardingComplete(status === 'true');
+      await AsyncStorage.setItem(ONBOARDING_COMPLETE, 'false');
+      setIsOnboardingComplete(false);
       setIsLoading(false);
     } catch (error) {
       console.error('Error checking onboarding status:', error);
@@ -111,7 +125,7 @@ export default function App() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !isFontLoaded) {
     return <LoadingScreen />;
   }
 
@@ -175,6 +189,26 @@ export default function App() {
               name="HomeClassic" 
               component={ClassicTabNavigator}
               options={{ headerShown: false }} 
+            />
+            <Stack.Screen 
+              name="Quiz" 
+              component={QuizScreen}
+              options={{ title: 'Quiz' }} 
+            />
+            <Stack.Screen 
+              name="VideoPlayer" 
+              component={VideoPlayerScreen}
+              options={{ title: 'Video Player' }} 
+            />
+            <Stack.Screen 
+              name="VoiceRecording" 
+              component={VoiceRecordingScreen}
+              options={{ title: 'Voice Recording' }} 
+            />
+            <Stack.Screen 
+              name="Stash" 
+              component={StashScreen}
+              options={{ title: 'Stash' }} 
             />
             <Stack.Screen 
               name="StyleTest" 

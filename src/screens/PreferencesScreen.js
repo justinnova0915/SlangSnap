@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Switch, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { fonts } from '../src/styles/typography';
+import { fonts } from '../styles/typography';
 
 const PreferencesScreen = () => {
   const navigation = useNavigation();

@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    fontFamily: fonts.righteous,
+    fontFamily: fonts.georgia,
     fontSize: 16,
     color: '#1F2937',
   },
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   itemTitle: {
-    fontFamily: fonts.righteous,
+    fontFamily: fonts.georgia,
     fontSize: 14,
     color: '#1F2937',
     marginBottom: 2,

@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontFamily: fonts.righteous,
+    fontFamily: fonts.georgia,
     fontSize: 16,
     color: '#1F2937',
     marginBottom: 4,

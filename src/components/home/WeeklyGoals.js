@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    fontFamily: fonts.righteous,
+    fontFamily: fonts.georgia,
     fontSize: 16,
     color: '#1F2937',
   },

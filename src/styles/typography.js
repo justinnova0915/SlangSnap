@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 
 export const fonts = {
+  georgia: 'georgia',
   righteous: 'Righteous',
   permanentMarker: 'PermanentMarker',
 };
@@ -81,18 +82,18 @@ export const typography = {
     },
     heading: {
       large: {
-        fontFamily: fonts.righteous,
+        fontFamily: fonts.georgia,
         fontSize: 30,
         fontWeight: '600',
         letterSpacing: 0.25,
       },
       medium: {
-        fontFamily: fonts.righteous,
+        fontFamily: fonts.georgia,
         fontSize: 22,
         fontWeight: '600',
       },
       small: {
-        fontFamily: fonts.righteous,
+        fontFamily: fonts.georgia,
         fontSize: 18,
         fontWeight: '600',
       },

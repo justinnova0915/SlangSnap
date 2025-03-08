@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-import { fonts } from '../src/styles/typography';
+import { fonts } from '../styles/typography';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();

@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+#reference material
+docs/
+
 # Expo
 .expo/
 dist/
@@ -34,3 +37,4 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+docs/slang_snap UI

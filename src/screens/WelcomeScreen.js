@@ -1,11 +1,9 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Platform, ScrollView } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Platform, ScrollView, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRef, useEffect } from 'react';
-import { Animated } from 'react-native';
-import { GlitchText } from '../src/components/shared/GlitchText';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { fonts } from '../src/styles/typography';
+import { GlitchText } from '../components/shared/GlitchText';
+import { fonts } from '../styles/typography';
 
 const { width } = Dimensions.get('window');
 
@@ -51,11 +49,11 @@ export default function WelcomeScreen({ navigation }) {
         }),
       ])
     );
-    
+
     bounce.start();
-    
+
     return () => bounce.stop();
-  }, []);
+  }, [bounceAnim]);
 
   const features = [
     {
@@ -155,7 +153,7 @@ export default function WelcomeScreen({ navigation }) {
           <GradientText
             text="Snap"
             colors={['#EC4899', '#3B82F6']}
-            style={styles.snapTextBase}
+            style={[styles.snapTextBase, styles.snapText]}
           />
         </View>
         <Text style={styles.subtitle}>

@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    fontFamily: fonts.righteous,
+    fontFamily: fonts.georgia,
     fontSize: 16,
     color: '#1F2937',
   },
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   lessonTitle: {
-    fontFamily: fonts.righteous,
+    fontFamily: fonts.georgia,
     fontSize: 16,
     color: '#1F2937',
     marginBottom: 2,
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: fonts.righteous,
+    fontFamily: fonts.georgia,
   },
 });
 
