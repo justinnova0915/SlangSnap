@@ -4,9 +4,319 @@ import { useSelector } from 'react-redux';
 import { fonts } from '../styles/typography';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
+const useStyles = (mode) => {
+  const isZoomer = mode === 'zoomer';
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: isZoomer ? '#141414' : '#F3F4F6',
+    },
+    contentContainer: {
+      paddingBottom: isZoomer ? 24 : 20,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: isZoomer ? '#1A1A1A' : 'white',
+      paddingHorizontal: isZoomer ? 20 : 16,
+      paddingVertical: isZoomer ? 16 : 12,
+      borderBottomWidth: 1,
+      borderBottomColor: isZoomer ? '#2A2A2A' : '#E5E7EB',
+    },
+    headerButton: {
+      width: isZoomer ? 40 : 32,
+      height: isZoomer ? 40 : 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: isZoomer ? '#2A2A2A' : 'transparent',
+      borderRadius: isZoomer ? 20 : 0,
+    },
+    headerTitle: {
+      fontSize: isZoomer ? 20 : 16,
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+      color: isZoomer ? '#FFFFFF' : '#1F2937',
+      letterSpacing: isZoomer ? 0.5 : 0,
+    },
+    headerRight: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    progressText: {
+      color: isZoomer ? '#FF3366' : '#2563EB',
+      fontSize: isZoomer ? 16 : 14,
+      marginRight: 8,
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+    },
+    videoContainer: {
+      height: Dimensions.get('window').height * (isZoomer ? 0.65 : 0.6),
+      backgroundColor: '#000',
+      position: 'relative',
+    },
+    videoPreview: {
+      width: '100%',
+      height: '100%',
+      position: 'absolute',
+    },
+    videoOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: isZoomer ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.3)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    playButton: {
+      width: isZoomer ? 80 : 64,
+      height: isZoomer ? 80 : 64,
+      backgroundColor: isZoomer ? '#FF3366' : '#2563EB',
+      borderRadius: isZoomer ? 40 : 32,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    videoControls: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      padding: isZoomer ? 20 : 16,
+      backgroundColor: isZoomer ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.5)',
+    },
+    progressBar: {
+      height: isZoomer ? 6 : 4,
+      backgroundColor: isZoomer ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.3)',
+      borderRadius: isZoomer ? 3 : 2,
+      marginBottom: isZoomer ? 12 : 8,
+    },
+    progressFill: {
+      height: '100%',
+      backgroundColor: isZoomer ? '#FF3366' : '#2563EB',
+      borderRadius: isZoomer ? 3 : 2,
+    },
+    timeStamps: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: isZoomer ? 20 : 16,
+    },
+    timeText: {
+      color: 'white',
+      fontSize: isZoomer ? 14 : 12,
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+    },
+    controlButtons: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: isZoomer ? 32 : 24,
+    },
+    controlButton: {
+      width: isZoomer ? 40 : 32,
+      height: isZoomer ? 40 : 32,
+      backgroundColor: isZoomer ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.3)',
+      borderRadius: isZoomer ? 20 : 16,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    playPauseButton: {
+      width: isZoomer ? 48 : 40,
+      height: isZoomer ? 48 : 40,
+      borderRadius: isZoomer ? 24 : 20,
+      backgroundColor: isZoomer ? '#FF3366' : 'rgba(255,255,255,0.3)',
+    },
+    subtitleToggle: {
+      position: 'absolute',
+      top: isZoomer ? 20 : 16,
+      right: isZoomer ? 20 : 16,
+      backgroundColor: isZoomer ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.8)',
+      borderRadius: isZoomer ? 20 : 4,
+      paddingHorizontal: isZoomer ? 12 : 8,
+      paddingVertical: isZoomer ? 6 : 4,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: isZoomer ? 6 : 4,
+    },
+    subtitleToggleText: {
+      color: isZoomer ? '#FFFFFF' : '#374151',
+      fontSize: isZoomer ? 14 : 12,
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+    },
+    subtitlesContainer: {
+      position: 'absolute',
+      bottom: isZoomer ? 120 : 100,
+      left: isZoomer ? 20 : 16,
+      right: isZoomer ? 20 : 16,
+      alignItems: 'center',
+    },
+    subtitlesText: {
+      color: 'white',
+      backgroundColor: isZoomer ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.7)',
+      padding: isZoomer ? 12 : 8,
+      borderRadius: isZoomer ? 12 : 8,
+      fontSize: isZoomer ? 16 : 14,
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+      textAlign: 'center',
+    },
+    playlistContainer: {
+      backgroundColor: isZoomer ? '#1A1A1A' : '#F9FAFB',
+      padding: isZoomer ? 20 : 16,
+    },
+    playlistTitle: {
+      fontSize: isZoomer ? 24 : 16,
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+      color: isZoomer ? '#FFFFFF' : '#1F2937',
+      marginBottom: isZoomer ? 16 : 12,
+      letterSpacing: isZoomer ? 0.5 : 0,
+    },
+    carousel: {
+      flexGrow: 0,
+    },
+    carouselItem: {
+      width: isZoomer ? 220 : 192,
+      marginRight: isZoomer ? 16 : 12,
+      backgroundColor: isZoomer ? '#2A2A2A' : 'white',
+      borderRadius: isZoomer ? 16 : 8,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: isZoomer ? '#3A3A3A' : '#E5E7EB',
+    },
+    thumbnailContainer: {
+      position: 'relative',
+      height: isZoomer ? 120 : 96,
+    },
+    thumbnail: {
+      width: '100%',
+      height: '100%',
+      resizeMode: 'cover',
+    },
+    nowPlayingBadge: {
+      position: 'absolute',
+      top: isZoomer ? 12 : 8,
+      right: isZoomer ? 12 : 8,
+      backgroundColor: isZoomer ? '#FF3366' : '#2563EB',
+      paddingHorizontal: isZoomer ? 12 : 8,
+      paddingVertical: isZoomer ? 6 : 4,
+      borderRadius: isZoomer ? 12 : 4,
+    },
+    nowPlayingText: {
+      color: 'white',
+      fontSize: isZoomer ? 14 : 12,
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+    },
+    idiomCard: {
+      margin: isZoomer ? 20 : 16,
+      padding: isZoomer ? 20 : 16,
+      backgroundColor: isZoomer ? '#1A1A1A' : '#F9FAFB',
+      borderRadius: isZoomer ? 16 : 8,
+      borderWidth: 1,
+      borderColor: isZoomer ? '#2A2A2A' : '#E5E7EB',
+    },
+    idiomTitle: {
+      fontSize: isZoomer ? 28 : 20,
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+      color: isZoomer ? '#FFFFFF' : '#1F2937',
+      letterSpacing: isZoomer ? 0.5 : 0,
+    },
+    idiomActionButton: {
+      width: isZoomer ? 40 : 32,
+      height: isZoomer ? 40 : 32,
+      backgroundColor: isZoomer ? '#2A2A2A' : '#F3F4F6',
+      borderRadius: isZoomer ? 20 : 16,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: isZoomer ? '#3A3A3A' : '#E5E7EB',
+    },
+    idiomDescription: {
+      fontSize: isZoomer ? 16 : 14,
+      color: isZoomer ? '#9CA3AF' : '#4B5563',
+      marginBottom: isZoomer ? 16 : 12,
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+    },
+    exampleContainer: {
+      backgroundColor: isZoomer ? '#2A2A2A' : 'white',
+      padding: isZoomer ? 16 : 12,
+      borderRadius: isZoomer ? 12 : 8,
+      borderWidth: 1,
+      borderColor: isZoomer ? '#3A3A3A' : '#E5E7EB',
+      marginBottom: isZoomer ? 16 : 12,
+    },
+    exampleLabel: {
+      fontSize: isZoomer ? 14 : 12,
+      color: isZoomer ? '#9CA3AF' : '#6B7280',
+      marginBottom: isZoomer ? 6 : 4,
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+    },
+    exampleText: {
+      fontSize: isZoomer ? 16 : 14,
+      color: isZoomer ? '#FFFFFF' : '#4B5563',
+      fontStyle: 'italic',
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+    },
+    highlightedText: {
+      color: isZoomer ? '#FF3366' : '#2563EB',
+      fontWeight: 'bold',
+    },
+    tag: {
+      backgroundColor: isZoomer ? '#2A2A2A' : '#EFF6FF',
+      paddingHorizontal: isZoomer ? 12 : 8,
+      paddingVertical: isZoomer ? 6 : 4,
+      borderRadius: isZoomer ? 16 : 12,
+      borderWidth: isZoomer ? 1 : 0,
+      borderColor: isZoomer ? '#FF3366' : 'transparent',
+    },
+    tagText: {
+      color: isZoomer ? '#FF3366' : '#2563EB',
+      fontSize: isZoomer ? 14 : 12,
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+    },
+    actionButtonsContainer: {
+      backgroundColor: isZoomer ? '#1A1A1A' : 'white',
+      paddingHorizontal: isZoomer ? 20 : 16,
+      paddingVertical: isZoomer ? 16 : 12,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      borderTopWidth: 1,
+      borderTopColor: isZoomer ? '#2A2A2A' : '#E5E7EB',
+    },
+    actionButtonIcon: {
+      width: isZoomer ? 48 : 40,
+      height: isZoomer ? 48 : 40,
+      borderRadius: isZoomer ? 24 : 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: isZoomer ? 6 : 4,
+    },
+    actionButtonBlue: {
+      backgroundColor: isZoomer ? '#2A2A2A' : '#EFF6FF',
+    },
+    actionButtonPrimary: {
+      backgroundColor: isZoomer ? '#FF3366' : '#2563EB',
+    },
+    actionButtonText: {
+      fontSize: isZoomer ? 14 : 12,
+      color: isZoomer ? '#FFFFFF' : '#4B5563',
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+    },
+    clipInfo: {
+      padding: isZoomer ? 12 : 8,
+    },
+    clipTitle: {
+      fontSize: isZoomer ? 16 : 14,
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+      color: isZoomer ? '#FFFFFF' : '#1F2937',
+      marginBottom: isZoomer ? 4 : 2,
+    },
+    clipCategory: {
+      fontSize: isZoomer ? 14 : 12,
+      color: isZoomer ? '#9CA3AF' : '#6B7280',
+      fontFamily: isZoomer ? fonts.righteous : 'System',
+    }
+  });
+};
+
 const VideoPlayerScreen = ({ navigation }) => {
-  const mode = useSelector(state => state.settings.mode);
+  const mode = useSelector(state => state.settings.mode || 'classic');
   const [isPlaying, setIsPlaying] = useState(false);
+  const isZoomer = mode === 'zoomer';
+  const styles = useStyles(mode);
   const [showSubtitles, setShowSubtitles] = useState(true);
   const [progress, setProgress] = useState(45); // Mock progress percentage
 
@@ -21,13 +331,21 @@ const VideoPlayerScreen = ({ navigation }) => {
   const renderHeader = () => (
     <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
-        <Ionicons name="arrow-back" size={24} color="#4B5563" />
+        <Ionicons
+          name="arrow-back"
+          size={isZoomer ? 28 : 24}
+          color={isZoomer ? "#FFFFFF" : "#4B5563"}
+        />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>Idiom Video</Text>
       <View style={styles.headerRight}>
         <Text style={styles.progressText}>3/10</Text>
         <TouchableOpacity style={styles.headerButton}>
-          <Ionicons name="ellipsis-vertical" size={24} color="#4B5563" />
+          <Ionicons
+            name="ellipsis-vertical"
+            size={isZoomer ? 28 : 24}
+            color={isZoomer ? "#FFFFFF" : "#4B5563"}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -130,10 +448,18 @@ const VideoPlayerScreen = ({ navigation }) => {
         <Text style={styles.idiomTitle}>on the ball</Text>
         <View style={styles.idiomActions}>
           <TouchableOpacity style={styles.idiomActionButton}>
-            <FontAwesome5 name="bookmark" size={16} color="#6B7280" />
+            <FontAwesome5
+              name="bookmark"
+              size={isZoomer ? 20 : 16}
+              color={isZoomer ? "#FFFFFF" : "#6B7280"}
+            />
           </TouchableOpacity>
           <TouchableOpacity style={styles.idiomActionButton}>
-            <FontAwesome5 name="share-alt" size={16} color="#6B7280" />
+            <FontAwesome5
+              name="share-alt"
+              size={isZoomer ? 20 : 16}
+              color={isZoomer ? "#FFFFFF" : "#6B7280"}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -157,25 +483,41 @@ const VideoPlayerScreen = ({ navigation }) => {
     <View style={styles.actionButtonsContainer}>
       <TouchableOpacity style={styles.actionButton}>
         <View style={[styles.actionButtonIcon, styles.actionButtonBlue]}>
-          <FontAwesome5 name="check" size={20} color="#2563EB" />
+          <FontAwesome5
+            name="check"
+            size={isZoomer ? 24 : 20}
+            color={isZoomer ? "#FF3366" : "#2563EB"}
+          />
         </View>
         <Text style={styles.actionButtonText}>Got it</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.actionButton}>
         <View style={[styles.actionButtonIcon, styles.actionButtonBlue]}>
-          <FontAwesome5 name="microphone" size={20} color="#2563EB" />
+          <FontAwesome5
+            name="microphone"
+            size={isZoomer ? 24 : 20}
+            color={isZoomer ? "#FF3366" : "#2563EB"}
+          />
         </View>
         <Text style={styles.actionButtonText}>Record</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.actionButton}>
         <View style={[styles.actionButtonIcon, styles.actionButtonBlue]}>
-          <FontAwesome5 name="redo" size={20} color="#2563EB" />
+          <FontAwesome5
+            name="redo"
+            size={isZoomer ? 24 : 20}
+            color={isZoomer ? "#FF3366" : "#2563EB"}
+          />
         </View>
         <Text style={styles.actionButtonText}>Replay</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.actionButton}>
         <View style={[styles.actionButtonIcon, styles.actionButtonPrimary]}>
-          <FontAwesome5 name="forward" size={20} color="white" />
+          <FontAwesome5
+            name="forward"
+            size={isZoomer ? 24 : 20}
+            color="white"
+          />
         </View>
         <Text style={styles.actionButtonText}>Next</Text>
       </TouchableOpacity>
@@ -192,306 +534,5 @@ const VideoPlayerScreen = ({ navigation }) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
-  contentContainer: {
-    paddingBottom: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: 'white',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  headerButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontFamily: fonts.georgia,
-    color: '#1F2937',
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  progressText: {
-    color: '#2563EB',
-    fontSize: 14,
-    marginRight: 8,
-  },
-  videoContainer: {
-    height: Dimensions.get('window').height * 0.6,
-    backgroundColor: '#000',
-    position: 'relative',
-  },
-  videoPreview: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
-  videoOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButton: {
-    width: 64,
-    height: 64,
-    backgroundColor: '#2563EB',
-    borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  videoControls: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 16,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    borderRadius: 2,
-    marginBottom: 8,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#2563EB',
-    borderRadius: 2,
-  },
-  timeStamps: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  timeText: {
-    color: 'white',
-    fontSize: 12,
-  },
-  controlButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 24,
-  },
-  controlButton: {
-    width: 32,
-    height: 32,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playPauseButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-  },
-  subtitleToggle: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    backgroundColor: 'rgba(255,255,255,0.8)',
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  subtitleToggleText: {
-    color: '#374151',
-    fontSize: 12,
-  },
-  subtitlesContainer: {
-    position: 'absolute',
-    bottom: 100,
-    left: 16,
-    right: 16,
-    alignItems: 'center',
-  },
-  subtitlesText: {
-    color: 'white',
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    padding: 8,
-    borderRadius: 8,
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  playlistContainer: {
-    backgroundColor: '#F9FAFB',
-    padding: 16,
-  },
-  playlistTitle: {
-    fontSize: 16,
-    fontFamily: fonts.georgia,
-    color: '#1F2937',
-    marginBottom: 12,
-  },
-  carousel: {
-    flexDirection: 'row',
-  },
-  carouselItem: {
-    width: 192,
-    marginRight: 12,
-    backgroundColor: 'white',
-    borderRadius: 8,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  thumbnailContainer: {
-    height: 96,
-    position: 'relative',
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-  },
-  nowPlayingBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: '#2563EB',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  nowPlayingText: {
-    color: 'white',
-    fontSize: 12,
-  },
-  clipInfo: {
-    padding: 8,
-  },
-  clipTitle: {
-    fontSize: 14,
-    fontFamily: fonts.georgia,
-    color: '#1F2937',
-  },
-  clipCategory: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
-  idiomCard: {
-    margin: 16,
-    padding: 16,
-    backgroundColor: '#F9FAFB',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  idiomHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  idiomTitle: {
-    fontSize: 20,
-    fontFamily: fonts.georgia,
-    color: '#1F2937',
-  },
-  idiomActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  idiomActionButton: {
-    width: 32,
-    height: 32,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  idiomDescription: {
-    fontSize: 14,
-    color: '#4B5563',
-    marginBottom: 12,
-  },
-  exampleContainer: {
-    backgroundColor: 'white',
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    marginBottom: 12,
-  },
-  exampleLabel: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginBottom: 4,
-  },
-  exampleText: {
-    fontSize: 14,
-    color: '#4B5563',
-    fontStyle: 'italic',
-  },
-  highlightedText: {
-    color: '#2563EB',
-    fontWeight: 'bold',
-  },
-  tagContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  tag: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  tagText: {
-    color: '#2563EB',
-    fontSize: 12,
-  },
-  actionButtonsContainer: {
-    backgroundColor: 'white',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-  },
-  actionButton: {
-    alignItems: 'center',
-  },
-  actionButtonIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  actionButtonBlue: {
-    backgroundColor: '#EFF6FF',
-  },
-  actionButtonPrimary: {
-    backgroundColor: '#2563EB',
-  },
-  actionButtonText: {
-    fontSize: 12,
-    color: '#4B5563',
-  },
-});
 
 export default VideoPlayerScreen;

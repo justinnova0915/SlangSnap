@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, StatusBar, SafeAreaView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { fonts } from '../styles/typography';
+import { fonts, typography } from '../styles/typography';
+import { gradients } from '../styles/gradients';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import mockAssets from '../assets/mock';
@@ -15,11 +16,20 @@ import Categories from '../components/home/Categories';
 import WeeklyGoals from '../components/home/WeeklyGoals';
 import VoiceStudioPromo from '../components/home/VoiceStudioPromo';
 import TodayTip from '../components/home/TodayTip';
+const useTheme = () => {
+  const mode = useSelector(state => state.settings.mode || 'classic'); // Default to classic if not set
+  return {
+    mode,
+    typography: typography[mode],
+    gradients: gradients[mode],
+    isZoomer: mode === 'zoomer'
+  };
+};
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const mode = useSelector(state => state.settings.mode);
-  const preferences = useSelector(state => state.settings.preferences);
+  const theme = useTheme();
+  const { preferences } = useSelector(state => state.settings);
 
   // Mock data - replace with real data later
   const mockClips = [
@@ -68,9 +78,14 @@ const HomeScreen = () => {
     navigation.navigate('Tips');
   };
 
+  const styles = getStyles(theme);
+  
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
+      <StatusBar
+        barStyle={theme.isZoomer ? "light-content" : "dark-content"}
+        backgroundColor={theme.isZoomer ? '#141414' : '#F9FAFB'}
+      />
       
       {/* Header */}
       <View style={styles.header}>
@@ -81,27 +96,37 @@ const HomeScreen = () => {
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.iconButton}>
             <View style={styles.notificationDot} />
-            <Ionicons name="notifications-outline" size={24} color="#4B5563" />
+            <Ionicons
+              name="notifications-outline"
+              size={theme.isZoomer ? 28 : 24}
+              color={theme.isZoomer ? '#FFFFFF' : '#4B5563'}
+            />
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.iconButton}
             onPress={() => navigation.navigate('Settings')}
           >
-            <Ionicons name="settings-outline" size={24} color="#4B5563" />
+            <Ionicons
+              name="settings-outline"
+              size={theme.isZoomer ? 28 : 24}
+              color={theme.isZoomer ? '#FFFFFF' : '#4B5563'}
+            />
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Main Content */}
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={theme.isZoomer ? { paddingBottom: 24 } : undefined}
       >
         {/* Streak Banner */}
         <View style={styles.section}>
           <StreakBanner
             streak={68}
             pointsToday={15}
+            mode={theme.mode}
           />
         </View>
 
@@ -114,6 +139,7 @@ const HomeScreen = () => {
             subtitle="Professional Communication"
             progress={60}
             onContinue={handleContinueLearning}
+            mode={theme.mode}
           />
         </View>
 
@@ -122,6 +148,7 @@ const HomeScreen = () => {
           <DailyPlaylist
             clips={mockClips}
             onPlaylistItemPress={handlePlaylistItemPress}
+            mode={theme.mode}
           />
         </View>
 
@@ -129,6 +156,7 @@ const HomeScreen = () => {
         <View style={styles.section}>
           <Categories
             onCategoryPress={handleCategoryPress}
+            mode={theme.mode}
           />
         </View>
 
@@ -139,6 +167,7 @@ const HomeScreen = () => {
             totalDays={10}
             daysLeft={3}
             weekNumber={24}
+            mode={theme.mode}
           />
         </View>
 
@@ -146,6 +175,7 @@ const HomeScreen = () => {
         <View style={styles.section}>
           <VoiceStudioPromo
             onPress={handleVoiceStudioPress}
+            mode={theme.mode}
           />
         </View>
 
@@ -155,6 +185,7 @@ const HomeScreen = () => {
             tipNumber={42}
             tipText="Practice using idioms in context rather than memorizing them in isolation to better understand their nuances."
             onViewMorePress={handleViewMoreTips}
+            mode={theme.mode}
           />
         </View>
       </ScrollView>
@@ -162,29 +193,30 @@ const HomeScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: theme.isZoomer ? '#141414' : '#F9FAFB',
   },
   header: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
+    backgroundColor: theme.isZoomer ? '#1E1E1E' : '#FFFFFF',
+    padding: theme.isZoomer ? 20 : 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: theme.isZoomer ? '#2A2A2A' : '#E5E7EB',
   },
   headerTitle: {
-    fontFamily: fonts.georgia,
-    fontSize: 18,
-    color: '#1F2937',
+    fontFamily: theme.isZoomer ? fonts.righteous : fonts.georgia,
+    fontSize: theme.isZoomer ? 24 : 18,
+    color: theme.isZoomer ? '#FFFFFF' : '#1F2937',
     marginBottom: 4,
   },
   headerDate: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: theme.isZoomer ? 14 : 12,
+    color: theme.isZoomer ? '#9CA3AF' : '#6B7280',
+    fontFamily: theme.isZoomer ? fonts.righteous : 'System',
   },
   headerIcons: {
     flexDirection: 'row',
@@ -193,22 +225,24 @@ const styles = StyleSheet.create({
   iconButton: {
     marginLeft: 16,
     position: 'relative',
+    padding: theme.isZoomer ? 8 : 0,
   },
   notificationDot: {
     position: 'absolute',
-    right: -2,
-    top: -2,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#EF4444',
+    right: theme.isZoomer ? 4 : -2,
+    top: theme.isZoomer ? 4 : -2,
+    width: theme.isZoomer ? 10 : 8,
+    height: theme.isZoomer ? 10 : 8,
+    borderRadius: theme.isZoomer ? 5 : 4,
+    backgroundColor: theme.isZoomer ? '#FF3366' : '#EF4444',
     zIndex: 1,
   },
   content: {
     flex: 1,
+    paddingHorizontal: theme.isZoomer ? 12 : 0,
   },
   section: {
-    marginTop: 16,
+    marginTop: theme.isZoomer ? 20 : 16,
   },
 });
 
