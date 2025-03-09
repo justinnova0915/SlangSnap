@@ -193,22 +193,22 @@ export default function App() {
             <Stack.Screen 
               name="Quiz" 
               component={QuizScreen}
-              options={{ title: 'Quiz' }} 
+              options={{ headerShown: false }} 
             />
             <Stack.Screen 
               name="VideoPlayer" 
               component={VideoPlayerScreen}
-              options={{ title: 'Video Player' }} 
+              options={{ headerShown: false }} 
             />
             <Stack.Screen 
               name="VoiceRecording" 
               component={VoiceRecordingScreen}
-              options={{ title: 'Voice Recording' }} 
+              options={{ headerShown: false }} 
             />
             <Stack.Screen 
               name="Stash" 
               component={StashScreen}
-              options={{ title: 'Stash' }} 
+              options={{ headerShown: false }} 
             />
             <Stack.Screen 
               name="StyleTest" 
