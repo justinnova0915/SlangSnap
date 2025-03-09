@@ -116,8 +116,8 @@ export default function App() {
 
   const checkOnboardingStatus = async () => {
     try {
-      const status = await AsyncStorage.getItem(ONBOARDING_COMPLETE);
-      setIsOnboardingComplete(status === 'true');
+      await AsyncStorage.setItem(ONBOARDING_COMPLETE, 'false');
+      setIsOnboardingComplete(false);
       setIsLoading(false);
     } catch (error) {
       console.error('Error checking onboarding status:', error);

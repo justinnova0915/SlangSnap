@@ -25,7 +25,7 @@ const useStyles = (mode) => {
     },
     headerTitle: {
       fontSize: isZoomer ? 24 : 16,
-      fontFamily: fonts.righteous,
+      fontFamily: fonts.georgia,
       color: isZoomer ? '#FFFFFF' : '#1F2937',
     },
     headerRight: {
@@ -47,7 +47,7 @@ const useStyles = (mode) => {
     multiplierText: {
       color: isZoomer ? '#FCD34D' : '#2563EB',
       fontSize: isZoomer ? 14 : 12,
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
       fontWeight: '500',
     },
     settingsButton: {
@@ -82,7 +82,7 @@ const useStyles = (mode) => {
     tabText: {
       color: isZoomer ? 'rgba(255,255,255,0.7)' : '#4B5563',
       fontSize: 14,
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
       fontWeight: '500',
     },
     activeTabText: {
@@ -104,7 +104,7 @@ const useStyles = (mode) => {
     },
     recordingTitle: {
       fontSize: isZoomer ? 24 : 18,
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
       fontWeight: '600',
       color: isZoomer ? '#FFFFFF' : '#1F2937',
       marginBottom: 4,
@@ -112,7 +112,7 @@ const useStyles = (mode) => {
     recordingSubtitle: {
       fontSize: isZoomer ? 16 : 14,
       color: isZoomer ? 'rgba(255,255,255,0.7)' : '#6B7280',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     waveformContainer: {
       height: isZoomer ? 120 : 96,
@@ -123,6 +123,8 @@ const useStyles = (mode) => {
       marginBottom: isZoomer ? 24 : 16,
       padding: isZoomer ? 12 : 8,
       overflow: 'hidden',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     recordingControls: {
       flexDirection: 'row',
@@ -169,7 +171,7 @@ const useStyles = (mode) => {
       fontSize: isZoomer ? 20 : 14,
       fontWeight: '500',
       color: isZoomer ? '#FFFFFF' : '#374151',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     addVoiceButton: {
       flexDirection: 'row',
@@ -183,7 +185,7 @@ const useStyles = (mode) => {
     addVoiceText: {
       color: 'white',
       fontSize: isZoomer ? 14 : 12,
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     mixerTimeline: {
       minHeight: isZoomer ? 120 : 100,
@@ -220,7 +222,7 @@ const useStyles = (mode) => {
       fontSize: isZoomer ? 14 : 12,
       fontWeight: '500',
       color: isZoomer ? '#FFFFFF' : '#4B5563',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     clipWaveform: {
       height: isZoomer ? 10 : 8,
@@ -237,13 +239,13 @@ const useStyles = (mode) => {
     timeMarker: {
       fontSize: isZoomer ? 14 : 12,
       color: isZoomer ? '#EC4899' : '#6B7280',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     recordingTime: {
       textAlign: 'center',
       fontSize: isZoomer ? 16 : 14,
       color: isZoomer ? '#FFFFFF' : '#6B7280',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
       marginBottom: isZoomer ? 20 : 16,
     },
     actionsContainer: {
@@ -264,7 +266,7 @@ const useStyles = (mode) => {
     discardButtonText: {
       color: isZoomer ? '#FFFFFF' : '#374151',
       fontWeight: '500',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
       fontSize: isZoomer ? 16 : 14,
     },
     saveButton: {
@@ -277,7 +279,7 @@ const useStyles = (mode) => {
     saveButtonText: {
       color: 'white',
       fontWeight: '500',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
       fontSize: isZoomer ? 16 : 14,
     },
     tipsTitle: {
@@ -285,7 +287,7 @@ const useStyles = (mode) => {
       fontWeight: '600',
       color: isZoomer ? '#FFFFFF' : '#1F2937',
       marginBottom: isZoomer ? 12 : 8,
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     tipsList: {
       gap: isZoomer ? 12 : 8,
@@ -303,7 +305,7 @@ const useStyles = (mode) => {
       flex: 1,
       fontSize: isZoomer ? 16 : 14,
       color: isZoomer ? '#FFFFFF' : '#374151',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     featuredHeader: {
       flexDirection: 'row',
@@ -316,12 +318,12 @@ const useStyles = (mode) => {
       fontSize: isZoomer ? 20 : 16,
       fontWeight: '600',
       color: isZoomer ? '#FFFFFF' : '#1F2937',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     seeAllLink: {
       color: isZoomer ? '#EC4899' : '#2563EB',
       fontSize: isZoomer ? 16 : 14,
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     featuredList: {
       borderTopWidth: 1,
@@ -363,7 +365,7 @@ const useStyles = (mode) => {
       fontSize: isZoomer ? 16 : 14,
       fontWeight: '500',
       color: isZoomer ? '#FFFFFF' : '#1F2937',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     speakerBadge: {
       flexDirection: 'row',
@@ -377,12 +379,12 @@ const useStyles = (mode) => {
     badgeText: {
       fontSize: isZoomer ? 14 : 12,
       color: isZoomer ? '#9CA3AF' : '#6B7280',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     recordingText: {
       fontSize: isZoomer ? 14 : 12,
       color: isZoomer ? '#FFFFFF' : '#6B7280',
-      fontFamily: isZoomer ? fonts.righteous : 'System',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
     },
     playButton: {
       width: isZoomer ? 40 : 32,
@@ -392,7 +394,128 @@ const useStyles = (mode) => {
       alignItems: 'center',
       justifyContent: 'center',
       marginLeft: isZoomer ? 12 : 8,
-    }
+    },
+    termHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: isZoomer ? 16 : 12,
+    },
+    termInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: isZoomer ? 12 : 8,
+    },
+    termEmoji: {
+      width: isZoomer ? 48 : 40,
+      height: isZoomer ? 48 : 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: isZoomer ? '#1F2937' : '#EFF6FF',
+      borderRadius: isZoomer ? 24 : 20,
+    },
+    termTitle: {
+      fontSize: isZoomer ? 20 : 16,
+      fontWeight: '600',
+      color: isZoomer ? '#FFFFFF' : '#1F2937',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+    },
+    termCategory: {
+      fontSize: isZoomer ? 14 : 12,
+      color: isZoomer ? '#9CA3AF' : '#6B7280',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+    },
+    infoButton: {
+      width: isZoomer ? 40 : 32,
+      height: isZoomer ? 40 : 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: isZoomer ? 'rgba(255,255,255,0.1)' : 'transparent',
+      borderRadius: isZoomer ? 20 : 16,
+    },
+    exampleBox: {
+      backgroundColor: isZoomer ? '#1F2937' : '#F9FAFB',
+      borderWidth: 1,
+      borderColor: isZoomer ? '#374151' : '#E5E7EB',
+      borderRadius: isZoomer ? 12 : 8,
+      padding: isZoomer ? 16 : 12,
+      marginBottom: isZoomer ? 16 : 12,
+    },
+    exampleText: {
+      fontSize: isZoomer ? 16 : 14,
+      color: isZoomer ? '#FFFFFF' : '#374151',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+    },
+    highlightedText: {
+      color: isZoomer ? '#EC4899' : '#2563EB',
+      fontWeight: '600',
+    },
+    listenButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+      backgroundColor: isZoomer ? '#EC4899' : '#2563EB',
+      paddingVertical: isZoomer ? 12 : 10,
+      borderRadius: isZoomer ? 12 : 6,
+      gap: 6,
+      marginBottom: isZoomer ? 16 : 12,
+      shadowColor: isZoomer ? '#EC4899' : '#2563EB',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: isZoomer ? 0.3 : 0.2,
+      shadowRadius: 6,
+      elevation: 4,
+    },
+    buttonIcon: {
+      color: 'white',
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: isZoomer ? 16 : 14,
+      fontWeight: '600',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+    },
+    termActions: {
+      flexDirection: 'row',
+      gap: isZoomer ? 16 : 12,
+    },
+    actionButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: isZoomer ? 'rgba(255,255,255,0.1)' : '#F3F4F6',
+      paddingHorizontal: isZoomer ? 12 : 8,
+      paddingVertical: isZoomer ? 8 : 4,
+      borderRadius: isZoomer ? 999 : 4,
+      gap: 4,
+    },
+    actionButtonText: {
+      color: isZoomer ? '#FFFFFF' : '#374151',
+      fontSize: isZoomer ? 14 : 12,
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+    },
+    sampleSentences: {
+      marginBottom: isZoomer ? 24 : 16,
+      backgroundColor: isZoomer ? 'transparent' : '#EFF6FF',
+      borderWidth: isZoomer ? 0 : 1,
+      borderColor: '#DBEAFE',
+      borderRadius: 6,
+      padding: isZoomer ? 0 : 12,
+    },
+    sampleTitle: {
+      fontSize: isZoomer ? 16 : 14,
+      fontWeight: '500',
+      color: isZoomer ? '#FFFFFF' : '#374151',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+      marginBottom: isZoomer ? 12 : 4,
+    },
+    sampleText: {
+      fontSize: isZoomer ? 14 : 13,
+      lineHeight: isZoomer ? 22 : 20,
+      color: isZoomer ? 'rgba(255,255,255,0.7)' : '#374151',
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
+      marginBottom: isZoomer ? 8 : 4,
+      paddingLeft: isZoomer ? 12 : 0,
+    },
   });
 };
 
@@ -470,7 +593,7 @@ const VoiceRecordingScreen = () => {
         </View>
 
         <TouchableOpacity style={styles.listenButton}>
-          <FontAwesome5 name="volume-up" size={16} color="#2563EB" style={styles.buttonIcon} />
+          <FontAwesome5 name="volume-up" size={20} color="white" />
           <Text style={styles.buttonText}>Listen to Example</Text>
         </TouchableOpacity>
 
