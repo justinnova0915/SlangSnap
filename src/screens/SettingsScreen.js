@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { fonts } from '../styles/typography';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const useStyles = (mode) => {
   const isZoomer = mode === 'zoomer';
@@ -362,6 +363,7 @@ const useStyles = (mode) => {
 };
 
 export default function SettingsScreen() {
+  const navigation = useNavigation();
   const mode = useSelector(state => state.settings.mode || 'classic');
   const isZoomer = mode === 'zoomer';
   const styles = useStyles(mode);
@@ -442,7 +444,8 @@ export default function SettingsScreen() {
         <FontAwesome5 
           name="cog" 
           size={isZoomer ? 24 : 20} 
-          color={isZoomer ? "white" : "#4B5563"} 
+          color={isZoomer ? "white" : "#4B5563"}
+          onPress={() => navigation.navigate('Preferences')} 
         />
       </TouchableOpacity>
     </LinearGradient>

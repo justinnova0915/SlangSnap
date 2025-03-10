@@ -25,7 +25,7 @@ const useStyles = (mode) => {
     },
     headerTitle: {
       fontSize: isZoomer ? 24 : 16,
-      fontFamily: fonts.georgia,
+      fontFamily: isZoomer ? fonts.righteous : fonts.georgia,
       color: isZoomer ? '#FFFFFF' : '#1F2937',
     },
     headerRight: {
@@ -537,9 +537,6 @@ const VoiceRecordingScreen = () => {
           <FontAwesome5 name="bolt" size={12} color="#2563EB" />
           <Text style={styles.multiplierText}>2x Points</Text>
         </View>
-        <TouchableOpacity style={styles.settingsButton}>
-          <FontAwesome5 name="cog" size={20} color="#4B5563" />
-        </TouchableOpacity>
       </View>
     </View>
   );

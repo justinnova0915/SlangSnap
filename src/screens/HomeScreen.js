@@ -104,7 +104,7 @@ const HomeScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconButton}
-            onPress={() => navigation.navigate('Settings')}
+            onPress={() => navigation.navigate('Preferences')}
           >
             <Ionicons
               name="settings-outline"
@@ -135,8 +135,6 @@ const HomeScreen = () => {
           <TodayLesson
             completed={3}
             total={5}
-            title="Business Idioms"
-            subtitle="Professional Communication"
             progress={60}
             onContinue={handleContinueLearning}
             mode={theme.mode}

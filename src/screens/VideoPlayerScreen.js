@@ -330,13 +330,6 @@ const VideoPlayerScreen = ({ navigation }) => {
 
   const renderHeader = () => (
     <View style={styles.header}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
-        <Ionicons
-          name="arrow-back"
-          size={isZoomer ? 28 : 24}
-          color={isZoomer ? "#FFFFFF" : "#4B5563"}
-        />
-      </TouchableOpacity>
       <Text style={styles.headerTitle}>Idiom Video</Text>
       <View style={styles.headerRight}>
         <Text style={styles.progressText}>3/10</Text>

@@ -1,40 +1,128 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { fonts } from '../../styles/typography';
 
-const DayIndicator = ({ day, isCompleted, isToday }) => {
+const TaskItem = ({ emoji, title, subtitle, xp, isCompleted, mode }) => {
+  const isZoomer = mode === 'zoomer';
+  
   return (
-    <View style={[
-      styles.dayIndicator,
-      isCompleted && styles.dayCompleted,
-      isToday && styles.dayToday
-    ]}>
-      <Ionicons
-        name={isCompleted ? "checkmark" : "calendar-outline"}
-        size={16}
-        color={isCompleted ? "#2563EB" : "#9CA3AF"}
-        style={styles.dayIcon}
-      />
-      <Text style={[
-        styles.dayText,
-        isCompleted && styles.dayTextCompleted,
-        isToday && styles.dayTextToday
-      ]}>
-        {day}
-      </Text>
+    <View style={[styles.taskItem, isZoomer && styles.zoomerTaskItem]}>
+      <View style={[styles.taskIconContainer, isZoomer && styles.zoomerTaskIconContainer, isCompleted && styles.completedTaskIcon]}>
+        {isZoomer ? (
+          <Text style={styles.taskEmoji}>{emoji}</Text>
+        ) : (
+          <Ionicons
+            name={isCompleted ? "checkmark" : "calendar-outline"}
+            size={16}
+            color={isCompleted ? "#2563EB" : "#9CA3AF"}
+          />
+        )}
+      </View>
+      <View style={styles.taskContent}>
+        <View style={styles.taskHeader}>
+          <Text style={[styles.taskTitle, isZoomer && styles.zoomerTaskTitle]}>
+            {title}
+          </Text>
+          {isZoomer && (
+            <Text style={styles.taskXP}>+{xp} XP</Text>
+          )}
+        </View>
+        {subtitle && (
+          <Text style={[styles.taskSubtitle, isZoomer && styles.zoomerTaskSubtitle]}>
+            {subtitle}
+          </Text>
+        )}
+      </View>
     </View>
   );
 };
 
-const WeeklyGoals = ({
-  completedDays = 7,
-  totalDays = 10,
-  daysLeft = 3,
-  weekNumber = 24,
-}) => {
-  const progress = (completedDays / totalDays) * 100;
+const getDefaultTasks = (mode) => {
+  if (mode === 'zoomer') {
+    return [
+      {
+        emoji: '✅',
+        title: 'Complete Daily Quiz',
+        subtitle: '5/5 questions answered',
+        xp: 25,
+        isCompleted: true
+      },
+      {
+        emoji: '✅',
+        title: 'Record Voice Snap',
+        subtitle: 'Practiced "no cap" pronunciation',
+        xp: 15,
+        isCompleted: true
+      },
+      {
+        emoji: '📱',
+        title: 'Watch Slang in Action',
+        subtitle: 'Watch a video with "rent free" usage',
+        xp: 20,
+        isCompleted: false
+      }
+    ];
+  }
+  return [
+    {
+      emoji: '✅',
+      title: 'Complete Business Quiz',
+      subtitle: '5/5 questions completed',
+      xp: 25,
+      isCompleted: true
+    },
+    {
+      emoji: '✅',
+      title: 'Record Presentation',
+      subtitle: 'Practiced "touch base" usage',
+      xp: 15,
+      isCompleted: true
+    },
+    {
+      emoji: '📱',
+      title: 'Watch Example Video',
+      subtitle: 'Learn "bottom line" in context',
+      xp: 20,
+      isCompleted: false
+    }
+  ];
+};
 
+const WeeklyGoals = ({
+  mode = 'classic',
+  tasks = getDefaultTasks(mode),
+  weekNumber = 24
+}) => {
+  const isZoomer = mode === 'zoomer';
+  const completedTasks = tasks.filter(task => task.isCompleted).length;
+
+  if (isZoomer) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={[styles.sectionTitle, styles.zoomerSectionTitle]}>
+            Today's Goals
+          </Text>
+          <Text style={styles.zoomerProgress}>
+            {completedTasks}/{tasks.length} Completed
+          </Text>
+        </View>
+
+        <View style={[styles.card, styles.zoomerCard]}>
+          {tasks.map((task, index) => (
+            <TaskItem
+              key={index}
+              {...task}
+              mode={mode}
+            />
+          ))}
+        </View>
+      </View>
+    );
+  }
+
+  // Classic mode layout with weekly progress
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -43,29 +131,39 @@ const WeeklyGoals = ({
       </View>
 
       <View style={styles.card}>
-        {/* Progress Header */}
         <View style={styles.progressHeader}>
           <Text style={styles.progressLabel}>Progress</Text>
-          <Text style={styles.progressCount}>{completedDays}/{totalDays} days</Text>
+          <Text style={styles.progressCount}>
+            {completedTasks}/{tasks.length} days
+          </Text>
         </View>
 
-        {/* Progress Bar */}
         <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBar, { width: `${progress}%` }]} />
+          <View 
+            style={[
+              styles.progressBar, 
+              { width: `${(completedTasks / tasks.length) * 100}%` }
+            ]} 
+          />
         </View>
 
-        {/* Progress Stats */}
         <View style={styles.progressStats}>
-          <Text style={styles.progressPercentage}>{progress}% complete</Text>
-          <Text style={styles.daysLeft}>{daysLeft} days left</Text>
+          <Text style={styles.progressPercentage}>
+            {Math.round((completedTasks / tasks.length) * 100)}% complete
+          </Text>
+          <Text style={styles.daysLeft}>
+            {tasks.length - completedTasks} days left
+          </Text>
         </View>
 
-        {/* Day Indicators */}
-        <View style={styles.daysContainer}>
-          <DayIndicator day="Mon" isCompleted={true} />
-          <DayIndicator day="Tue" isCompleted={true} />
-          <DayIndicator day="Wed" isCompleted={true} />
-          <DayIndicator day="Thu" isToday={true} />
+        <View style={styles.tasksContainer}>
+          {tasks.map((task, index) => (
+            <TaskItem
+              key={index}
+              {...task}
+              mode={mode}
+            />
+          ))}
         </View>
       </View>
     </View>
@@ -88,9 +186,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1F2937',
   },
+  zoomerSectionTitle: {
+    fontFamily: fonts.righteous,
+    fontSize: 24,
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
   weekNumber: {
     fontSize: 14,
     color: '#2563EB',
+  },
+  zoomerProgress: {
+    fontSize: 14,
+    color: '#EC4899',
+    fontFamily: fonts.righteous,
   },
   card: {
     backgroundColor: '#FFFFFF',
@@ -98,6 +207,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: '#E5E7EB',
+  },
+  zoomerCard: {
+    backgroundColor: '#1F2937',
+    borderRadius: 16,
+    borderWidth: 0,
+    padding: 20,
   },
   progressHeader: {
     flexDirection: 'row',
@@ -139,41 +254,76 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6B7280',
   },
-  daysContainer: {
+  tasksContainer: {
+    gap: 12,
+  },
+  taskItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+  },
+  zoomerTaskItem: {
+    backgroundColor: 'transparent',
+    marginBottom: 16,
+  },
+  taskIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  zoomerTaskIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#374151',
+    marginRight: 12,
+  },
+  completedTaskIcon: {
+    backgroundColor: '#065F46',
+  },
+  taskEmoji: {
+    fontSize: 20,
+  },
+  taskContent: {
+    flex: 1,
+  },
+  taskHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  dayIndicator: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    marginHorizontal: 4,
     alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    marginBottom: 2,
   },
-  dayCompleted: {
-    backgroundColor: '#EFF6FF',
-  },
-  dayToday: {
-    backgroundColor: '#F3F4F6',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  dayIcon: {
-    marginRight: 4,
-  },
-  dayText: {
+  taskTitle: {
     fontSize: 14,
+    color: '#1F2937',
+    fontFamily: fonts.georgia,
+    marginBottom: 2,
+  },
+  zoomerTaskTitle: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontFamily: fonts.righteous,
+  },
+  taskXP: {
+    fontSize: 14,
+    color: '#10B981',
+    fontFamily: fonts.righteous,
+  },
+  taskSubtitle: {
+    fontSize: 12,
     color: '#6B7280',
   },
-  dayTextCompleted: {
-    color: '#2563EB',
-  },
-  dayTextToday: {
-    color: '#374151',
+  zoomerTaskSubtitle: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    fontFamily: fonts.righteous,
   },
 });
 

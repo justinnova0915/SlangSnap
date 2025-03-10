@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { fonts } from '../../styles/typography';
 
 const StreakBanner = ({ streak = 68, pointsToday = 15, mode = 'classic' }) => {

@@ -1,5 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { fonts } from '../../styles/typography';
 
 const PlaylistItem = ({ 
@@ -7,12 +9,15 @@ const PlaylistItem = ({
   title, 
   category, 
   duration, 
-  isPlaying = false, 
+  isPlaying = false,
+  mode = 'classic',
   onPress 
 }) => {
+  const isZoomer = mode === 'zoomer';
+
   return (
     <TouchableOpacity 
-      style={styles.playlistItem}
+      style={[styles.playlistItem, isZoomer && styles.zoomerPlaylistItem]}
       onPress={onPress}
     >
       <View style={styles.thumbnailContainer}>
@@ -20,19 +25,34 @@ const PlaylistItem = ({
           source={thumbnail} 
           style={styles.thumbnail}
         />
+        <LinearGradient
+          colors={isZoomer ? ['transparent', 'rgba(0,0,0,0.7)'] : ['transparent', 'transparent']}
+          style={StyleSheet.absoluteFill}
+        />
         {isPlaying ? (
-          <View style={styles.playingBadge}>
-            <Text style={styles.playingText}>Now Playing</Text>
-          </View>
+          isZoomer ? (
+            <LinearGradient
+              colors={['#EC4899', '#8B5CF6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[styles.playingBadge, styles.zoomerPlayingBadge]}
+            >
+              <Text style={[styles.playingText, styles.zoomerPlayingText]}>Now Playing</Text>
+            </LinearGradient>
+          ) : (
+            <View style={styles.playingBadge}>
+              <Text style={styles.playingText}>Now Playing</Text>
+            </View>
+          )
         ) : (
-          <View style={styles.durationBadge}>
-            <Text style={styles.durationText}>{duration}</Text>
+          <View style={[styles.durationBadge, isZoomer && styles.zoomerDurationBadge]}>
+            <Text style={[styles.durationText, isZoomer && styles.zoomerDurationText]}>{duration}</Text>
           </View>
         )}
       </View>
-      <View style={styles.itemContent}>
-        <Text style={styles.itemTitle}>{title}</Text>
-        <Text style={styles.itemCategory}>{category}</Text>
+      <View style={[styles.itemContent, isZoomer && styles.zoomerItemContent]}>
+        <Text style={[styles.itemTitle, isZoomer && styles.zoomerItemTitle]}>{title}</Text>
+        <Text style={[styles.itemCategory, isZoomer && styles.zoomerItemCategory]}>{category}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -40,13 +60,30 @@ const PlaylistItem = ({
 
 const DailyPlaylist = ({ 
   clips = [], 
-  onPlaylistItemPress 
+  onPlaylistItemPress,
+  mode = 'classic'
 }) => {
+  const isZoomer = mode === 'zoomer';
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.sectionTitle}>Daily Playlist</Text>
-        <Text style={styles.clipCount}>{clips.length} clips</Text>
+        <Text style={[styles.sectionTitle, isZoomer && styles.zoomerSectionTitle]}>
+          Daily Playlist
+        </Text>
+        <View style={styles.countContainer}>
+          {isZoomer && (
+            <FontAwesome5 
+              name="fire" 
+              size={14} 
+              color="#EC4899" 
+              style={styles.fireIcon} 
+            />
+          )}
+          <Text style={[styles.clipCount, isZoomer && styles.zoomerClipCount]}>
+            {clips.length} clips
+          </Text>
+        </View>
       </View>
 
       <ScrollView 
@@ -62,6 +99,7 @@ const DailyPlaylist = ({
             category={clip.category}
             duration={clip.duration}
             isPlaying={clip.isPlaying}
+            mode={mode}
             onPress={() => onPlaylistItemPress(clip)}
           />
         ))}
@@ -86,16 +124,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1F2937',
   },
+  zoomerSectionTitle: {
+    fontFamily: fonts.righteous,
+    fontSize: 24,
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
+  countContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  fireIcon: {
+    marginRight: 4,
+  },
   clipCount: {
     fontSize: 14,
     color: '#2563EB',
+  },
+  zoomerClipCount: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    fontFamily: fonts.righteous,
   },
   scrollContent: {
     paddingLeft: 16,
     paddingRight: 4,
   },
   playlistItem: {
-    width: 192,
+    width: 208,
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
     marginRight: 12,
@@ -103,8 +159,13 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     overflow: 'hidden',
   },
+  zoomerPlaylistItem: {
+    backgroundColor: '#1F2937',
+    borderWidth: 0,
+    borderRadius: 16,
+  },
   thumbnailContainer: {
-    height: 96,
+    height: 112,
     position: 'relative',
   },
   thumbnail: {
@@ -121,10 +182,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 4,
   },
+  zoomerPlayingBadge: {
+    borderRadius: 999,
+  },
   playingText: {
     color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '500',
+  },
+  zoomerPlayingText: {
+    fontFamily: fonts.righteous,
   },
   durationBadge: {
     position: 'absolute',
@@ -135,12 +202,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderRadius: 2,
   },
+  zoomerDurationBadge: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderRadius: 999,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
   durationText: {
     color: '#FFFFFF',
     fontSize: 12,
   },
+  zoomerDurationText: {
+    fontFamily: fonts.righteous,
+  },
   itemContent: {
-    padding: 8,
+    padding: 12,
+  },
+  zoomerItemContent: {
+    padding: 16,
   },
   itemTitle: {
     fontFamily: fonts.georgia,
@@ -148,9 +227,19 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     marginBottom: 2,
   },
+  zoomerItemTitle: {
+    fontFamily: fonts.righteous,
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
   itemCategory: {
     fontSize: 12,
     color: '#6B7280',
+  },
+  zoomerItemCategory: {
+    color: '#EC4899',
+    fontFamily: fonts.righteous,
   },
 });
 

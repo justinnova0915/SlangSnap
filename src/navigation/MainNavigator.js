@@ -4,8 +4,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
 import StashScreen from '../screens/StashScreen';
 import QuizScreen from '../screens/QuizScreen';
-import VoiceRecordingScreen from '../../screens/VoiceRecordingScreen';
-import PreferencesScreen from '../../screens/PreferencesScreen';
+import VoiceRecordingScreen from '../screens/VoiceRecordingScreen';
+import PreferencesScreen from '../screens/PreferencesScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();

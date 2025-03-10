@@ -1,66 +1,150 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Animated } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { fonts } from '../../styles/typography';
 
+const getDefaultContent = (mode) => {
+  if (mode === 'zoomer') {
+    return {
+      title: "rent free",
+      emoji: "🧠",
+      tags: ["Social Media", "Expression"],
+      definition: "When someone or something is constantly on your mind without paying 'rent' - you can't stop thinking about it.",
+      example: "That song is living rent free in my head all week.",
+      subtitle: "Trending Slang"
+    };
+  }
+  return {
+    title: "break the ice",
+    emoji: "🧊",
+    tags: ["Business", "Communication"],
+    definition: "To do or say something to relieve tension or get a conversation started in a social situation.",
+    example: "He told a joke to break the ice at the start of the meeting.",
+    subtitle: "Business Communication"
+  };
+};
+
 const TodayLesson = ({
-  completed = 3,
-  total = 5,
-  emoji = "💼",
-  title = "Business Idioms",
-  subtitle = "Professional Communication",
-  progress = 60,
+  title,
+  emoji,
+  tags,
+  definition,
+  example,
   onContinue,
+  onListen,
   mode = 'classic'
 }) => {
+  const defaultContent = getDefaultContent(mode);
+  title = title || defaultContent.title;
+  emoji = emoji || defaultContent.emoji;
+  tags = tags || defaultContent.tags;
+  definition = definition || defaultContent.definition;
+  example = example || defaultContent.example;
+  const subtitle = defaultContent.subtitle;
   const isZoomer = mode === 'zoomer';
   
   return (
     <View style={styles.container}>
       <View style={[styles.header, isZoomer && styles.zoomerHeader]}>
         <Text style={[styles.sectionTitle, isZoomer && styles.zoomerSectionTitle]}>
-          {isZoomer ? "Up Next 🎯" : "Today's Lesson"}
+          {isZoomer ? "Today's Slang" : "Today's Lesson"}
         </Text>
-        <Text style={[styles.progress, isZoomer && styles.zoomerProgress]}>
-          {completed}/{total} completed
-        </Text>
+        {isZoomer ? (
+          <View style={styles.dateContainer}>
+            <FontAwesome5 name="calendar-alt" size={14} color="#EC4899" style={styles.calendarIcon} />
+            <Text style={styles.dateText}>Apr 15</Text>
+          </View>
+        ) : null}
       </View>
 
       <View style={[styles.card, isZoomer && styles.zoomerCard]}>
-        {/* Lesson Info */}
-        <View style={styles.lessonInfo}>
-          <View style={[styles.iconContainer, isZoomer && styles.zoomerIconContainer]}>
-            <Text style={[styles.emoji, isZoomer && styles.zoomerEmoji]}>{emoji}</Text>
+        {isZoomer ? (
+          <LinearGradient
+            colors={['#6366f1', '#8b5cf6', '#ec4899']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientHeader}
+          >
+            <View style={styles.lessonInfo}>
+              <View style={[styles.iconContainer, isZoomer && styles.zoomerIconContainer]}>
+                <Text style={styles.emoji}>{emoji}</Text>
+              </View>
+              <View>
+                <Text style={[styles.lessonTitle, isZoomer && styles.zoomerLessonTitle]}>
+                  {title}
+                </Text>
+                <View style={styles.tagsContainer}>
+                  {tags.map((tag, index) => (
+                    <View key={index} style={styles.tag}>
+                      <Text style={styles.tagText}>{tag}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </View>
+            <View style={styles.trendingBadge}>
+              <Text style={styles.trendingText}>🔥 Trending</Text>
+            </View>
+          </LinearGradient>
+        ) : (
+          <View style={styles.lessonInfo}>
+            <View style={styles.iconContainer}>
+              <Text style={styles.emoji}>{emoji}</Text>
+            </View>
+            <View>
+              <Text style={styles.lessonTitle}>{title}</Text>
+              <Text style={styles.lessonSubtitle}>{subtitle}</Text>
+            </View>
           </View>
-          <View>
-            <Text style={[styles.lessonTitle, isZoomer && styles.zoomerLessonTitle]}>
-              {title}
+        )}
+
+        <View style={styles.content}>
+
+          <View style={styles.section}>
+            <Text style={[styles.sectionLabel, isZoomer && styles.zoomerSectionLabel]}>
+              Definition:
             </Text>
-            <Text style={[styles.lessonSubtitle, isZoomer && styles.zoomerLessonSubtitle]}>
-              {subtitle}
+            <Text style={[styles.definitionText, isZoomer && styles.zoomerDefinitionText]}>
+              {definition}
             </Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={[styles.sectionLabel, isZoomer && styles.zoomerSectionLabel]}>
+              Example:
+            </Text>
+            <View style={[styles.exampleBox, isZoomer && styles.zoomerExampleBox]}>
+              <FontAwesome5 name="quote-left" size={14} color={isZoomer ? "#EC4899" : "#2563EB"} style={styles.quoteIcon} />
+              <Text style={[styles.exampleText, isZoomer && styles.zoomerExampleText]}>
+                {example.split(title).map((part, i, arr) => (
+                  i === arr.length - 1 ? part : <React.Fragment key={i}>
+                    {part}<Text style={[styles.highlightText, isZoomer && styles.zoomerHighlightText]}>{title}</Text>
+                  </React.Fragment>
+                ))}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity 
+              style={[styles.listenButton, isZoomer && styles.zoomerListenButton]}
+              onPress={onListen}
+            >
+              <FontAwesome5 name="volume-up" size={14} color={isZoomer ? "white" : "#2563EB"} />
+              <Text style={[styles.listenButtonText, isZoomer && styles.zoomerListenButtonText]}>Listen</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.practiceButton, isZoomer && styles.zoomerPracticeButton]}
+              onPress={onContinue}
+            >
+              <Text style={[styles.practiceButtonText, isZoomer && styles.zoomerPracticeButtonText]}>
+                {isZoomer ? "Practice Now" : "Continue"}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
-
-        {/* Progress Bar */}
-        <View style={[styles.progressBarContainer, isZoomer && styles.zoomerProgressBarContainer]}>
-          <View
-            style={[
-              styles.progressBar,
-              isZoomer && styles.zoomerProgressBar,
-              { width: `${progress}%` }
-            ]}
-          />
-        </View>
-
-        {/* Continue Button */}
-        <TouchableOpacity
-          style={[styles.continueButton, isZoomer && styles.zoomerContinueButton]}
-          onPress={onContinue}
-        >
-          <Text style={[styles.buttonText, isZoomer && styles.zoomerButtonText]}>
-            {isZoomer ? "Let's Go! 🚀" : "Continue Learning"}
-          </Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -91,43 +175,45 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     letterSpacing: 0.5,
   },
-  progress: {
-    fontSize: 14,
-    color: '#2563EB',
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  zoomerProgress: {
-    fontSize: 16,
-    color: '#FF3366',
+  calendarIcon: {
+    marginRight: 4,
+  },
+  dateText: {
+    color: '#9CA3AF',
+    fontSize: 14,
     fontFamily: fonts.righteous,
   },
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    padding: 16,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
   zoomerCard: {
-    backgroundColor: '#1A1A1A',
-    borderColor: '#2A2A2A',
+    backgroundColor: '#1F2937',
     borderRadius: 16,
-    padding: 20,
-    shadowColor: '#FF3366',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    borderWidth: 0,
+  },
+  gradientHeader: {
+    padding: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   lessonInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
   },
   iconContainer: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: '#DBEAFE',
+    borderRadius: 8,
+    backgroundColor: '#EFF6FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -135,85 +221,176 @@ const styles = StyleSheet.create({
   zoomerIconContainer: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FF3366',
-    marginRight: 16,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    marginRight: 12,
   },
   emoji: {
-    fontSize: 20,
-  },
-  zoomerEmoji: {
     fontSize: 24,
   },
   lessonTitle: {
-    fontFamily: fonts.georgia,
     fontSize: 16,
+    fontFamily: fonts.georgia,
     color: '#1F2937',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   zoomerLessonTitle: {
+    fontSize: 24,
     fontFamily: fonts.righteous,
-    fontSize: 20,
     color: '#FFFFFF',
-    marginBottom: 4,
-    letterSpacing: 0.5,
+    marginBottom: 8,
   },
-  lessonSubtitle: {
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
+  tag: {
+    backgroundColor: 'rgba(236,72,153,0.2)',
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(236,72,153,0.3)',
+  },
+  tagText: {
+    color: '#F9A8D4',
     fontSize: 12,
-    color: '#6B7280',
+    fontFamily: fonts.righteous,
   },
-  zoomerLessonSubtitle: {
+  trendingBadge: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  trendingText: {
+    color: 'white',
+    fontSize: 12,
+    fontFamily: fonts.righteous,
+  },
+  content: {
+    padding: 16,
+    position: 'relative',
+  },
+  swipeIndicator: {
+    position: 'absolute',
+    right: 16,
+    top: -8,
+  },
+  swipeEmoji: {
+    fontSize: 24,
+    opacity: 0.7,
+  },
+  section: {
+    marginBottom: 16,
+  },
+  sectionLabel: {
     fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 4,
+  },
+  zoomerSectionLabel: {
     color: '#9CA3AF',
     fontFamily: fonts.righteous,
   },
-  progressBarContainer: {
-    height: 6,
-    backgroundColor: '#E5E7EB',
-    borderRadius: 3,
-    marginBottom: 12,
-    overflow: 'hidden',
+  definitionText: {
+    fontSize: 14,
+    color: '#1F2937',
+    lineHeight: 20,
   },
-  zoomerProgressBarContainer: {
-    height: 8,
-    backgroundColor: '#2A2A2A',
-    borderRadius: 4,
-    marginBottom: 16,
+  zoomerDefinitionText: {
+    color: 'white',
+    fontFamily: fonts.righteous,
+    fontSize: 16,
+    lineHeight: 24,
   },
-  progressBar: {
-    height: '100%',
-    backgroundColor: '#2563EB',
-    borderRadius: 3,
+  exampleBox: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
-  zoomerProgressBar: {
-    backgroundColor: '#FF3366',
-    borderRadius: 4,
+  zoomerExampleBox: {
+    backgroundColor: '#111827',
+    borderRadius: 12,
+    padding: 16,
   },
-  continueButton: {
+  quoteIcon: {
+    marginRight: 8,
+    marginTop: 2,
+  },
+  exampleText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#4B5563',
+    lineHeight: 20,
+  },
+  zoomerExampleText: {
+    color: 'white',
+    fontFamily: fonts.righteous,
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  highlightText: {
+    color: '#2563EB',
+    fontWeight: '500',
+  },
+  zoomerHighlightText: {
+    color: '#EC4899',
+    fontWeight: 'normal',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+  },
+  listenButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EFF6FF',
+    paddingVertical: 8,
+    borderRadius: 6,
+    gap: 8,
+  },
+  zoomerListenButton: {
+    backgroundColor: '#374151',
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  listenButtonText: {
+    color: '#2563EB',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  zoomerListenButtonText: {
+    color: 'white',
+    fontFamily: fonts.righteous,
+    fontSize: 16,
+  },
+  practiceButton: {
+    flex: 1,
     backgroundColor: '#2563EB',
     paddingVertical: 8,
     borderRadius: 6,
     alignItems: 'center',
   },
-  zoomerContinueButton: {
-    backgroundColor: '#FF3366',
+  zoomerPracticeButton: {
+    backgroundColor: '#EC4899',
     paddingVertical: 12,
     borderRadius: 12,
-    shadowColor: '#FF3366',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
   },
-  buttonText: {
-    color: '#FFFFFF',
+  practiceButtonText: {
+    color: 'white',
     fontSize: 14,
-    fontFamily: fonts.georgia,
+    fontWeight: '500',
   },
-  zoomerButtonText: {
-    fontSize: 18,
+  zoomerPracticeButtonText: {
     fontFamily: fonts.righteous,
-    letterSpacing: 0.5,
+    fontSize: 16,
   },
 });
 
