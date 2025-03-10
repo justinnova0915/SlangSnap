@@ -104,7 +104,7 @@ export default function StylePickerScreen() {
 
   const handleModeSelect = (mode) => {
     dispatch(setMode(mode));
-    navigation.navigate('Preferences');
+    navigation.navigate('Preferences', { fromOnboarding: true });
   };
 
   const zoomerFeatures = [
@@ -168,7 +168,7 @@ export default function StylePickerScreen() {
       </View>
       <View style={styles.signInContainer}>
         <Text style={styles.signInText}>Already have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text style={styles.signInLink}>Sign In</Text>
         </TouchableOpacity>
       </View>

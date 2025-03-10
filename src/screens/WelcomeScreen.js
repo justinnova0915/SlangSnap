@@ -197,7 +197,7 @@ export default function WelcomeScreen({ navigation }) {
       {/* Button */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('StylePicker')}
+          onPress={() => navigation.navigate('Register')}
           style={styles.buttonWrapper}
         >
           <LinearGradient
@@ -211,8 +211,13 @@ export default function WelcomeScreen({ navigation }) {
         </TouchableOpacity>
         <View style={styles.signInContainer}>
           <Text style={styles.signInText}>
-            Already have an account? {' '}
-            <Text style={styles.signInLink}>Sign In</Text>
+            Already have an account?{' '}
+            <Text
+              style={styles.signInLink}
+              onPress={() => navigation.navigate('Login')}
+            >
+              Sign In
+            </Text>
           </Text>
         </View>
       </View>

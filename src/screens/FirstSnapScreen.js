@@ -52,8 +52,8 @@ export default function FirstSnapScreen() {
     try {
       // Mark onboarding as complete
       await AsyncStorage.setItem(ONBOARDING_COMPLETE, 'true');
-      // Navigate to appropriate home screen
-      navigation.replace(mode === 'zoomer' ? 'HomeZoomer' : 'HomeClassic');
+      // Always navigate to HomeZoomer (which handles both modes internally)
+      navigation.replace('HomeZoomer');
     } catch (error) {
       console.error('Error saving onboarding status:', error);
     }

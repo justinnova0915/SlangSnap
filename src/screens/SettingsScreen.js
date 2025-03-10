@@ -440,12 +440,14 @@ export default function SettingsScreen() {
       <Text style={styles.headerTitle}>
         {isZoomer ? "Profile" : "My Profile"}
       </Text>
-      <TouchableOpacity style={styles.iconButton}>
-        <FontAwesome5 
-          name="cog" 
-          size={isZoomer ? 24 : 20} 
+      <TouchableOpacity
+        style={styles.iconButton}
+        onPress={() => navigation.navigate('Preferences', { fromOnboarding: false })}
+      >
+        <FontAwesome5
+          name="cog"
+          size={isZoomer ? 24 : 20}
           color={isZoomer ? "white" : "#4B5563"}
-          onPress={() => navigation.navigate('Preferences')} 
         />
       </TouchableOpacity>
     </LinearGradient>
