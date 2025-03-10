@@ -5,7 +5,13 @@ import { fonts } from '../../styles/typography';
 
 const StreakBanner = ({ streak = 68, pointsToday = 15, mode = 'classic' }) => {
   const isZoomer = mode === 'zoomer';
-  const days = ['M', 'T', 'W', 'T', 'F'];
+  const days = [
+    { id: 'mon', label: 'M' },
+    { id: 'tue', label: 'T' },
+    { id: 'wed', label: 'W' },
+    { id: 'thu', label: 'T' },
+    { id: 'fri', label: 'F' }
+  ];
   const completedDays = 3; // Mock data - should come from props
   const daysUntilBadge = 4; // Mock data - should come from props
 
@@ -61,7 +67,7 @@ const StreakBanner = ({ streak = 68, pointsToday = 15, mode = 'classic' }) => {
           <View style={styles.daysContainer}>
             {days.map((day, index) => (
               <View
-                key={day}
+                key={day.id}
                 style={[
                   styles.dayBox,
                   index < completedDays && styles.completedDay,
@@ -72,7 +78,7 @@ const StreakBanner = ({ streak = 68, pointsToday = 15, mode = 'classic' }) => {
                   styles.dayText,
                   index >= completedDays && styles.upcomingDayText
                 ]}>
-                  {day}
+                  {day.label}
                 </Text>
                 {index === completedDays && (
                   <View style={styles.currentDayIndicator} />
