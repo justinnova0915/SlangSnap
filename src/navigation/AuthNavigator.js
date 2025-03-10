@@ -4,6 +4,7 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import StylePickerScreen from '../screens/StylePickerScreen';
+import PreferencesScreen from '../screens/PreferencesScreen';
 import FirstSnapScreen from '../screens/FirstSnapScreen';
 
 const Stack = createStackNavigator();

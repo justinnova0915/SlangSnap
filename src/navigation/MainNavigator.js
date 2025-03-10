@@ -101,7 +101,7 @@ export default function MainNavigator() {
 
   return (
     <Stack.Navigator
-      initialRouteName={isOnboardingComplete ? "HomeZoomer" : "Welcome"}
+      initialRouteName={"HomeZoomer"}
       screenOptions={{
         headerStyle: {
           backgroundColor: '#111827',
@@ -117,27 +117,6 @@ export default function MainNavigator() {
         headerTitleAlign: 'center',
       }}
     >
-      <Stack.Screen
-        name="Welcome"
-        component={WelcomeScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="StylePicker"
-        component={StylePickerScreen}
-        options={{
-          title: 'Pick Your Vibe',
-          headerLeft: null
-        }}
-      />
-      <Stack.Screen
-        name="FirstSnap"
-        component={FirstSnapScreen}
-        options={{
-          title: 'First Snap',
-          headerLeft: null
-        }}
-      />
       <Stack.Screen
         name="HomeZoomer"
         component={mode === 'zoomer' ? ZoomerTabNavigator : ClassicTabNavigator}

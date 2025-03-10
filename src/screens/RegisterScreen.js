@@ -100,7 +100,7 @@ const RegisterScreen = ({ navigation }) => {
       <TouchableOpacity 
         style={styles.button} 
         onPress={handleRegister}
-        disabled={isLoading}
+        disabled={false}
       >
         {isLoading ? (
           <ActivityIndicator color="#fff" />

@@ -5,7 +5,8 @@ const initialState = {
   user: null,
   token: null,
   isLoading: false,
-  error: null
+  error: null,
+  styleSelected: false
 };
 
 const authSlice = createSlice({
@@ -56,6 +57,9 @@ const authSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    stylePickerComplete: (state) => {
+      state.styleSelected = true;
     }
   }
 });
@@ -68,7 +72,8 @@ export const {
   registerSuccess, 
   registerFailure,
   logout,
-  clearError
+  clearError,
+  stylePickerComplete
 } = authSlice.actions;
 
 export default authSlice.reducer;

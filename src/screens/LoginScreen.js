@@ -54,10 +54,21 @@ const LoginScreen = ({ navigation }) => {
     }
 
     try {
-      console.log('Attempting login with email:', email);
+      console.log('1. Starting login attempt');
       dispatch(loginStart());
+      
+      console.log('2. Calling authAPI.login');
       const response = await authAPI.login(email, password);
+      console.log('3. API Response:', response);
+      
+      if (!response || !response.token) {
+        console.log('4. No token in response');
+        throw new Error('Invalid login response');
+      }
+      
+      console.log('5. Dispatching loginSuccess');
       dispatch(loginSuccess(response));
+      navigation.navigate('StylePicker');
     } catch (error) {
       console.log('Login Error:', error);
       let errorMessage = 'An error occurred during login. Please try again.';
