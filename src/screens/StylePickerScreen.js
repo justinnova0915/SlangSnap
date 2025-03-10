@@ -9,6 +9,7 @@ import { GlitchText } from '../components/shared/GlitchText';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useDispatch } from 'react-redux';
 import { setMode } from '../store/settingsSlice';
+import { stylePickerComplete } from '../store/authSlice';
 
 const { width } = Dimensions.get('window');
 
@@ -104,7 +105,7 @@ export default function StylePickerScreen() {
 
   const handleModeSelect = (mode) => {
     dispatch(setMode(mode));
-    navigation.navigate('Preferences', { fromOnboarding: true });
+    dispatch(stylePickerComplete());
   };
 
   const zoomerFeatures = [

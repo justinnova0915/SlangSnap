@@ -10,11 +10,10 @@ import { loginSuccess } from '../store/authSlice';
 const Stack = createStackNavigator();
 
 const RootNavigator = () => {
-  const { token, isLoading } = useSelector((state) => state.auth);
-  console.log('token:', token);
-  console.log('isLoading:', isLoading);
+  const { token, isLoading, styleSelected} = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
+  console.log('Auth State:', { token, isLoading, styleSelected });
+  
   useEffect(() => {
     const loadStoredAuth = async () => {
       try {

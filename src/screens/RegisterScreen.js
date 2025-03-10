@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert
+  Alert,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerStart, registerSuccess, registerFailure } from '../store/authSlice';
+import { registerStart, registerSuccess, registerFailure, resetStyle} from '../store/authSlice';
 import { authAPI } from '../services/api';
 
 const RegisterScreen = ({ navigation }) => {
@@ -19,6 +19,11 @@ const RegisterScreen = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const dispatch = useDispatch();
   const { isLoading, error } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    // Reset style selection when entering register screen
+    dispatch(resetStyle());
+  }, []);
 
   const handleRegister = async () => {
     if (!username || !email || !password || !confirmPassword) {

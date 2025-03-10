@@ -60,6 +60,9 @@ const authSlice = createSlice({
     },
     stylePickerComplete: (state) => {
       state.styleSelected = true;
+    },
+    resetStyle: (state) => {
+      state.styleSelected = false;
     }
   }
 });
@@ -73,7 +76,8 @@ export const {
   registerFailure,
   logout,
   clearError,
-  stylePickerComplete
+  stylePickerComplete,
+  resetStyle
 } = authSlice.actions;
 
 export default authSlice.reducer;

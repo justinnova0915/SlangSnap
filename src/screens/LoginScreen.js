@@ -68,7 +68,6 @@ const LoginScreen = ({ navigation }) => {
       
       console.log('5. Dispatching loginSuccess');
       dispatch(loginSuccess(response));
-      navigation.navigate('StylePicker');
     } catch (error) {
       console.log('Login Error:', error);
       let errorMessage = 'An error occurred during login. Please try again.';
