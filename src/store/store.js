@@ -5,6 +5,15 @@ import { combineReducers } from 'redux';
 import settingsReducer, { savePreferences } from './settingsSlice';
 import authReducer from './authSlice';
 
+// Simple middleware that saves preferences when action indicates it
+const savingMiddleware = store => next => action => {
+  const result = next(action);
+  if (action.meta?.save) {
+    store.dispatch(savePreferences());
+  }
+  return result;
+};
+
 
 const persistConfig = {
   key: 'root',
@@ -26,7 +35,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }),
+    }).concat(savingMiddleware),
 });
 
 export const persistor = persistStore(store);

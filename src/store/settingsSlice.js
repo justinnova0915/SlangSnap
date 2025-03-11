@@ -38,28 +38,67 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
-    setMode(state, action) {
-      console.log('Setting mode:', action.payload);
-      state.mode = action.payload;
-      state.preferences.mode = action.payload;
+    setMode: {
+      reducer(state, action) {
+        state.mode = action.payload;
+        state.preferences.mode = action.payload;
+      },
+      prepare(mode) {
+        return {
+          payload: mode,
+          meta: { save: true }  // Flag to indicate this should trigger a save
+        };
+      }
     },
-    setPreferences(state, action) {
-      state.preferences = {
-        ...state.preferences,
-        ...action.payload,
-      };
+    setPreferences: {
+      reducer(state, action) {
+        state.preferences = {
+          ...state.preferences,
+          ...action.payload,
+        };
+      },
+      prepare(prefs) {
+        return {
+          payload: prefs,
+          meta: { save: true }
+        };
+      }
     },
-    setInterests(state, action) {
-      state.preferences.interests = action.payload;
+    setInterests: {
+      reducer(state, action) {
+        state.preferences.interests = action.payload;
+      },
+      prepare(interests) {
+        return {
+          payload: interests,
+          meta: { save: true }
+        };
+      }
     },
-    setNotificationSettings(state, action) {
-      state.preferences.notifications = {
-        ...state.preferences.notifications,
-        ...action.payload,
-      };
+    setNotificationSettings: {
+      reducer(state, action) {
+        state.preferences.notifications = {
+          ...state.preferences.notifications,
+          ...action.payload,
+        };
+      },
+      prepare(settings) {
+        return {
+          payload: settings,
+          meta: { save: true }
+        };
+      }
     },
-    setSoundEffects(state, action) {
-      state.preferences.soundEffects = action.payload;
+    setSoundEffects: {
+      reducer(state, action) {
+        state.preferences.soundEffects = action.payload;
+      },
+      prepare(enabled) {
+        return {
+          payload: enabled,
+          meta: { save: true }
+        };
+      }
     },
   },
   extraReducers: (builder) => {
