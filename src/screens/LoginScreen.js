@@ -14,6 +14,7 @@ import { typography } from '../styles/typography';
 import { gradients } from '../styles/gradients';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginStart, loginSuccess, loginFailure, stylePickerComplete} from '../store/authSlice';
+import { loadPreferences } from '../store/settingsSlice';
 import { authAPI } from '../services/api';
 
 const LoginScreen = ({ navigation }) => {
@@ -72,9 +73,12 @@ const LoginScreen = ({ navigation }) => {
       
       console.log('5. Dispatching loginSuccess');
       dispatch(loginSuccess(response));
+      
+      console.log('6. Loading user preferences');
+      await dispatch(loadPreferences());
+      
       dispatch(stylePickerComplete());
-      console.log('6. Navigating to StylePicker');
-      //navigation.navigate('StylePicker');
+      console.log('7. Login and preference load complete');
     } catch (error) {
       console.log('Login Error:', error);
       let errorMessage = 'An error occurred during login. Please try again.';

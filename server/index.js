@@ -55,6 +55,16 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  preferences: {
+    mode: { type: String, enum: ['zoomer', 'classic'], default: null },
+    interests: [String],
+    notifications: {
+      daily: { type: Boolean, default: false },
+      streaks: { type: Boolean, default: false },
+      community: { type: Boolean, default: false }
+    },
+    soundEffects: { type: Boolean, default: false }
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -217,6 +227,31 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Get user preferences
+app.get('/api/user/preferences', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('preferences');
+    res.json(user.preferences);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Update user preferences
+app.put('/api/user/preferences', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    user.preferences = {
+      ...user.preferences,
+      ...req.body
+    };
+    await user.save();
+    res.json(user.preferences);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

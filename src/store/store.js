@@ -2,8 +2,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers } from 'redux';
-import settingsReducer from './settingsSlice';
+import settingsReducer, { savePreferences } from './settingsSlice';
 import authReducer from './authSlice';
+
 
 const persistConfig = {
   key: 'root',

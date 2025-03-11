@@ -49,6 +49,32 @@ api.interceptors.response.use(
   }
 );
 
+export const preferencesAPI = {
+  getPreferences: async () => {
+    try {
+      console.log('Fetching preferences...');
+      const response = await api.get('/user/preferences');
+      console.log('Preferences response:', response.data);
+      return response.data;
+    } catch (error) {
+      logError(error);
+      throw error.response?.data?.message || 'Failed to get preferences';
+    }
+  },
+  
+  updatePreferences: async (preferences) => {
+    try {
+      console.log('Updating preferences with:', preferences);
+      const response = await api.put('/user/preferences', preferences);
+      console.log('Update preferences response:', response.data);
+      return response.data;
+    } catch (error) {
+      logError(error);
+      throw error.response?.data?.message || 'Failed to update preferences';
+    }
+  }
+};
+
 export const authAPI = {
   testConnection: async () => {
     try {

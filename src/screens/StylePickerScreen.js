@@ -7,8 +7,8 @@ import { Animated } from 'react-native';
 import { fonts } from '../styles/typography';
 import { GlitchText } from '../components/shared/GlitchText';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { useDispatch } from 'react-redux';
-import { setMode } from '../store/settingsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setMode, savePreferences } from '../store/settingsSlice';
 import { stylePickerComplete } from '../store/authSlice';
 
 const { width } = Dimensions.get('window');
@@ -104,6 +104,7 @@ export default function StylePickerScreen() {
   const dispatch = useDispatch();
 
   const handleModeSelect = (mode) => {
+    console.log("handleModeSelect", mode);
     dispatch(setMode(mode));
     dispatch(stylePickerComplete());
   };

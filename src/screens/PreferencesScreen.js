@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Switch, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Switch, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fonts, typography } from '../styles/typography';
 import { logout } from '../store/authSlice';
-import { setMode, selectMode } from '../store/settingsSlice';
+import { setMode, selectMode, loadPreferences, setPreferences, savePreferences } from '../store/settingsSlice';
 import { LinearGradient } from 'expo-linear-gradient';
 import { gradients } from '../styles/gradients';
 
@@ -39,22 +39,31 @@ const PreferencesScreen = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const currentMode = useSelector(selectMode);
-  const [notificationSettings, setNotificationSettings] = useState({
-    daily: false,
-    streaks: false,
-    community: false,
-  });
-  const [soundEffects, setSoundEffects] = useState(false);
+  const { status, preferences } = useSelector(state => state.settings);
+
+  const [notificationSettings, setNotificationSettings] = useState(preferences.notifications);
+  const [soundEffects, setSoundEffects] = useState(preferences.soundEffects);
+
+  useEffect(() => {
+    dispatch(loadPreferences());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setNotificationSettings(preferences.notifications);
+    setSoundEffects(preferences.soundEffects);
+  }, [preferences]);
 
   const handleModeChange = (mode) => {
     dispatch(setMode(mode));
   };
 
   const handleNotificationToggle = (type) => {
-    setNotificationSettings((prev) => ({
-      ...prev,
-      [type]: !prev[type],
-    }));
+    const newSettings = {
+      ...notificationSettings,
+      [type]: !notificationSettings[type]
+    };
+    setNotificationSettings(newSettings);
+    dispatch(setPreferences({ notifications: newSettings }));
   };
 
   const modes = [
@@ -91,6 +100,29 @@ const PreferencesScreen = () => {
   const subtleTextColorStyle = {
     color: isZoomer ? '#D1D5DB' : '#6B7280',
   };
+
+  if (status === 'loading') {
+    return (
+      <View style={[styles.container, containerStyle, styles.centerContent]}>
+        <ActivityIndicator size="large" color={isZoomer ? '#3B82F6' : '#2563EB'} />
+      </View>
+    );
+  }
+
+  if (status === 'failed') {
+    console.error('Failed to load preferences:', preferences?.error);
+    console.log('Current state:', { status, preferences });
+    return (
+      <View style={[styles.container, containerStyle, styles.centerContent]}>
+        <Text style={[currentTypography.body.regular, textColorStyle]}>
+          Failed to load preferences. Please try again later.
+        </Text>
+        <Text style={[currentTypography.body.small, textColorStyle]}>
+          Error: {preferences?.error || 'Unknown error'}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={[styles.container, containerStyle]}>
@@ -171,7 +203,11 @@ const PreferencesScreen = () => {
           </Text>
           <Switch
             value={soundEffects}
-            onValueChange={() => setSoundEffects((prev) => !prev)}
+            onValueChange={() => {
+              const newValue = !soundEffects;
+              setSoundEffects(newValue);
+              dispatch(setPreferences({ soundEffects: newValue }));
+            }}
             trackColor={{
               false: isZoomer ? '#374151' : '#D1D5DB',
               true: isZoomer ? '#3B82F6' : '#2563EB',
