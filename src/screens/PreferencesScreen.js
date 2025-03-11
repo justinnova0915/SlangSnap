@@ -1,10 +1,26 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Switch, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute, } from '@react-navigation/native';
-import { useDispatch, useSelector, } from 'react-redux';
-import { fonts } from '../styles/typography';
+import { StyleSheet, Text, View, Switch, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { fonts, typography } from '../styles/typography';
 import { logout } from '../store/authSlice';
 import { setMode, selectMode } from '../store/settingsSlice';
+import { LinearGradient } from 'expo-linear-gradient';
+import { gradients } from '../styles/gradients';
+
+const ModeButton = ({ mode, title, gradientColors, description, isSelected, onPress }) => (
+  <TouchableOpacity style={styles.modeButton} onPress={onPress}>
+    <LinearGradient
+      colors={isSelected ? gradientColors : ['#1F2937', '#1F2937']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={styles.modeGradient}
+    >
+      <Text style={[typography[mode].heading.medium, styles.modeButtonTitle]}>{title}</Text>
+      <Text style={[typography[mode].body.small, styles.modeButtonDescription]}>{description}</Text>
+    </LinearGradient>
+  </TouchableOpacity>
+);
 
 const PreferencesScreen = () => {
   const navigation = useNavigation();
@@ -29,118 +45,81 @@ const PreferencesScreen = () => {
     }));
   };
 
-  const handleContinue = () => {
-    // Store preferences in Redux (to be implemented)
-    // For now, just navigate to FirstSnap
-    navigation.navigate('FirstSnap');
-  };
+  const modes = [
+    {
+      mode: 'zoomer',
+      title: 'Zoomer Mode',
+      gradientColors: gradients.zoomer.secondary,
+      description: 'Modern slang, vibrant design',
+    },
+    {
+      mode: 'classic',
+      title: 'Classic Mode',
+      gradientColors: gradients.classic.primary,
+      description: 'Professional idioms, clean design',
+    },
+  ];
 
-  const renderPreferences = () => {
-    if (currentMode === 'zoomer') {
-      return (
-        <>
-          <Text style={styles.sectionTitle}>Quick Settings 🚀</Text>
-          <View style={styles.switchContainer}>
-            <Text style={[styles.switchLabel, styles.zoomerText]}>Notifications</Text>
-            <Switch
-              value={Object.values(notificationSettings).some(v => v)}
-              onValueChange={(value) => {
-                setNotificationSettings({
-                  daily: value,
-                  streaks: value,
-                  community: value,
-                });
-              }}
-            />
-          </View>
-          <View style={styles.switchContainer}>
-            <Text style={[styles.switchLabel, styles.zoomerText]}>Sound FX</Text>
-            <Switch
-              value={soundEffects}
-              onValueChange={() => setSoundEffects((prev) => !prev)}
-            />
-          </View>
-        </>
-      );
-    }
+  const currentTypography = typography[currentMode || 'classic'];
 
-    return (
-      <>
-        <Text style={styles.sectionTitle}>Notification Settings</Text>
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={[currentTypography.heading.large, styles.title]}>Preferences</Text>
+
+      <Text style={[currentTypography.heading.small, styles.sectionTitle]}>App Mode</Text>
+      <View style={styles.modesContainer}>
+        {modes.map((modeData) => (
+          <ModeButton
+            key={modeData.mode}
+            {...modeData}
+            isSelected={currentMode === modeData.mode}
+            onPress={() => handleModeChange(modeData.mode)}
+          />
+        ))}
+      </View>
+
+      <Text style={[currentTypography.heading.small, styles.sectionTitle]}>Notification Settings</Text>
+      <View style={styles.settingsContainer}>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Daily Notifications</Text>
+          <Text style={[currentTypography.body.regular, styles.switchLabel]}>Daily Notifications</Text>
           <Switch
             value={notificationSettings.daily}
             onValueChange={() => handleNotificationToggle('daily')}
           />
         </View>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Streak Reminders</Text>
+          <Text style={[currentTypography.body.regular, styles.switchLabel]}>Streak Reminders</Text>
           <Switch
             value={notificationSettings.streaks}
             onValueChange={() => handleNotificationToggle('streaks')}
           />
         </View>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Community Updates</Text>
+          <Text style={[currentTypography.body.regular, styles.switchLabel]}>Community Updates</Text>
           <Switch
             value={notificationSettings.community}
             onValueChange={() => handleNotificationToggle('community')}
           />
         </View>
+      </View>
 
-        <Text style={styles.sectionTitle}>Sound Effects</Text>
+      <Text style={[currentTypography.heading.small, styles.sectionTitle]}>Sound Effects</Text>
+      <View style={styles.settingsContainer}>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Enable Sound Effects</Text>
+          <Text style={[currentTypography.body.regular, styles.switchLabel]}>Enable Sound Effects</Text>
           <Switch
             value={soundEffects}
             onValueChange={() => setSoundEffects((prev) => !prev)}
           />
         </View>
-      </>
-    );
-  };
-
-  return (
-    <ScrollView contentContainerStyle={[
-      styles.container,
-      currentMode === 'zoomer' && styles.zoomerContainer
-    ]}>
-      <Text style={[styles.title, currentMode === 'zoomer' && styles.zoomerTitle]}>
-        {currentMode === 'zoomer' ? 'Settings ⚡' : 'Preferences'}
-      </Text>
-
-      <Text style={styles.sectionTitle}>App Mode</Text>
-      <View style={styles.modesContainer}>
-        {['zoomer', 'classic'].map((mode) => (
-          <TouchableOpacity
-            key={mode}
-            style={[
-              styles.modeButton,
-              currentMode === mode && styles.modeButtonSelected,
-            ]}
-            onPress={() => handleModeChange(mode)}
-          >
-            <Text
-              style={[
-                styles.modeButtonText,
-                currentMode === mode && styles.modeButtonTextSelected,
-              ]}
-            >
-              {mode.charAt(0).toUpperCase() + mode.slice(1)}
-            </Text>
-          </TouchableOpacity>
-        ))}
       </View>
-
-      {renderPreferences()}
 
       {route.params?.fromOnboarding && (
         <TouchableOpacity
           style={styles.continueButton}
-          onPress={handleContinue}
+          onPress={() => navigation.navigate('FirstSnap')}
         >
-          <Text style={styles.continueButtonText}>Continue</Text>
+          <Text style={[currentTypography.button.large, styles.continueButtonText]}>Continue</Text>
         </TouchableOpacity>
       )}
 
@@ -154,7 +133,7 @@ const PreferencesScreen = () => {
           });
         }}
       >
-        <Text style={styles.continueButtonText}>Logout</Text>
+        <Text style={[currentTypography.button.large, styles.continueButtonText]}>Logout</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -167,41 +146,38 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   title: {
-    fontFamily: fonts.righteous,
-    fontSize: 32,
     color: '#fff',
     marginBottom: 24,
   },
   sectionTitle: {
-    fontFamily: fonts.righteous,
-    fontSize: 20,
     color: '#fff',
     marginBottom: 12,
   },
   modesContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    width: '100%',
     marginBottom: 24,
   },
   modeButton: {
-    backgroundColor: '#1F2937',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    width: '45%',
-    alignItems: 'center',
+    marginBottom: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
   },
-  modeButtonSelected: {
-    backgroundColor: '#3B82F6',
+  modeGradient: {
+    padding: 16,
+    borderRadius: 12,
   },
-  modeButtonText: {
-    fontFamily: fonts.righteous,
-    fontSize: 18,
-    color: '#D1D5DB',
-    textTransform: 'capitalize',
-  },
-  modeButtonTextSelected: {
+  modeButtonTitle: {
     color: '#fff',
+    marginBottom: 4,
+  },
+  modeButtonDescription: {
+    color: '#D1D5DB',
+  },
+  settingsContainer: {
+    backgroundColor: '#1F2937',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
   },
   switchContainer: {
     flexDirection: 'row',
@@ -210,8 +186,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   switchLabel: {
-    fontFamily: fonts.righteous,
-    fontSize: 16,
     color: '#D1D5DB',
   },
   continueButton: {
@@ -222,12 +196,10 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   continueButtonText: {
-    fontFamily: fonts.righteous,
-    fontSize: 18,
     color: '#fff',
   },
   logoutButton: {
-    backgroundColor: '#DC2626',  // Red color for warning
+    backgroundColor: '#DC2626',
     marginTop: 12,
   },
 });
