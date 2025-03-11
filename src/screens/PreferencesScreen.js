@@ -8,16 +8,28 @@ import { setMode, selectMode } from '../store/settingsSlice';
 import { LinearGradient } from 'expo-linear-gradient';
 import { gradients } from '../styles/gradients';
 
-const ModeButton = ({ mode, title, gradientColors, description, isSelected, onPress }) => (
+const ModeButton = ({ mode, title, gradientColors, description, isSelected, onPress, isZoomer }) => (
   <TouchableOpacity style={styles.modeButton} onPress={onPress}>
     <LinearGradient
-      colors={isSelected ? gradientColors : ['#1F2937', '#1F2937']}
+      colors={isSelected ? gradientColors : [isZoomer ? '#1F2937' : '#F3F4F6', isZoomer ? '#374151' : '#F3F4F6']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       style={styles.modeGradient}
     >
-      <Text style={[typography[mode].heading.medium, styles.modeButtonTitle]}>{title}</Text>
-      <Text style={[typography[mode].body.small, styles.modeButtonDescription]}>{description}</Text>
+      <Text style={[
+        typography[mode].heading.medium, 
+        styles.modeButtonTitle,
+        { color: isSelected ? isZoomer ? '#000000' : "#fff": isZoomer ? '#fff' : '#000000' }
+      ]}>
+        {title}
+      </Text>
+      <Text style={[
+        typography[mode].body.small, 
+        styles.modeButtonDescription,
+        { color: isSelected ? "#D1D5DB": isZoomer ? '#D1D5DB' : '#6B7280' }
+      ]}>
+        {description}
+      </Text>
     </LinearGradient>
   </TouchableOpacity>
 );
@@ -55,18 +67,40 @@ const PreferencesScreen = () => {
     {
       mode: 'classic',
       title: 'Classic Mode',
-      gradientColors: gradients.classic.primary,
+      gradientColors: gradients.classic.secondary,
       description: 'Professional idioms, clean design',
     },
   ];
 
   const currentTypography = typography[currentMode || 'classic'];
+  const isZoomer = currentMode === 'zoomer';
+
+  // Dynamic styles based on mode
+  const containerStyle = {
+    backgroundColor: isZoomer ? '#111827' : '#FFFFFF',
+  };
+
+  const settingsContainerStyle = {
+    backgroundColor: isZoomer ? '#1F2937' : '#F3F4F6',
+  };
+
+  const textColorStyle = {
+    color: isZoomer ? '#FFFFFF' : '#1F2937',
+  };
+
+  const subtleTextColorStyle = {
+    color: isZoomer ? '#D1D5DB' : '#6B7280',
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={[currentTypography.heading.large, styles.title]}>Preferences</Text>
+    <ScrollView contentContainerStyle={[styles.container, containerStyle]}>
+      <Text style={[currentTypography.heading.large, styles.title, textColorStyle]}>
+        Preferences
+      </Text>
 
-      <Text style={[currentTypography.heading.small, styles.sectionTitle]}>App Mode</Text>
+      <Text style={[currentTypography.heading.small, styles.sectionTitle, textColorStyle]}>
+        App Mode
+      </Text>
       <View style={styles.modesContainer}>
         {modes.map((modeData) => (
           <ModeButton
@@ -74,52 +108,90 @@ const PreferencesScreen = () => {
             {...modeData}
             isSelected={currentMode === modeData.mode}
             onPress={() => handleModeChange(modeData.mode)}
+            isZoomer={isZoomer}
           />
         ))}
       </View>
 
-      <Text style={[currentTypography.heading.small, styles.sectionTitle]}>Notification Settings</Text>
-      <View style={styles.settingsContainer}>
+      <Text style={[currentTypography.heading.small, styles.sectionTitle, textColorStyle]}>
+        Notification Settings
+      </Text>
+      <View style={[styles.settingsContainer, settingsContainerStyle]}>
         <View style={styles.switchContainer}>
-          <Text style={[currentTypography.body.regular, styles.switchLabel]}>Daily Notifications</Text>
+          <Text style={[currentTypography.body.regular, styles.switchLabel, subtleTextColorStyle]}>
+            Daily Notifications
+          </Text>
           <Switch
             value={notificationSettings.daily}
             onValueChange={() => handleNotificationToggle('daily')}
+            trackColor={{
+              false: isZoomer ? '#374151' : '#D1D5DB',
+              true: isZoomer ? '#3B82F6' : '#2563EB',
+            }}
+            thumbColor={isZoomer ? '#FFFFFF' : '#FFFFFF'}
           />
         </View>
         <View style={styles.switchContainer}>
-          <Text style={[currentTypography.body.regular, styles.switchLabel]}>Streak Reminders</Text>
+          <Text style={[currentTypography.body.regular, styles.switchLabel, subtleTextColorStyle]}>
+            Streak Reminders
+          </Text>
           <Switch
             value={notificationSettings.streaks}
             onValueChange={() => handleNotificationToggle('streaks')}
+            trackColor={{
+              false: isZoomer ? '#374151' : '#D1D5DB',
+              true: isZoomer ? '#3B82F6' : '#2563EB',
+            }}
+            thumbColor={isZoomer ? '#FFFFFF' : '#FFFFFF'}
           />
         </View>
         <View style={styles.switchContainer}>
-          <Text style={[currentTypography.body.regular, styles.switchLabel]}>Community Updates</Text>
+          <Text style={[currentTypography.body.regular, styles.switchLabel, subtleTextColorStyle]}>
+            Community Updates
+          </Text>
           <Switch
             value={notificationSettings.community}
             onValueChange={() => handleNotificationToggle('community')}
+            trackColor={{
+              false: isZoomer ? '#374151' : '#D1D5DB',
+              true: isZoomer ? '#3B82F6' : '#2563EB',
+            }}
+            thumbColor={isZoomer ? '#FFFFFF' : '#FFFFFF'}
           />
         </View>
       </View>
 
-      <Text style={[currentTypography.heading.small, styles.sectionTitle]}>Sound Effects</Text>
-      <View style={styles.settingsContainer}>
+      <Text style={[currentTypography.heading.small, styles.sectionTitle, textColorStyle]}>
+        Sound Effects
+      </Text>
+      <View style={[styles.settingsContainer, settingsContainerStyle]}>
         <View style={styles.switchContainer}>
-          <Text style={[currentTypography.body.regular, styles.switchLabel]}>Enable Sound Effects</Text>
+          <Text style={[currentTypography.body.regular, styles.switchLabel, subtleTextColorStyle]}>
+            Enable Sound Effects
+          </Text>
           <Switch
             value={soundEffects}
             onValueChange={() => setSoundEffects((prev) => !prev)}
+            trackColor={{
+              false: isZoomer ? '#374151' : '#D1D5DB',
+              true: isZoomer ? '#3B82F6' : '#2563EB',
+            }}
+            thumbColor={isZoomer ? '#FFFFFF' : '#FFFFFF'}
           />
         </View>
       </View>
 
       {route.params?.fromOnboarding && (
         <TouchableOpacity
-          style={styles.continueButton}
+          style={[
+            styles.continueButton,
+            {
+              backgroundColor: isZoomer ? '#3B82F6' : '#2563EB',
+            },
+          ]}
           onPress={() => navigation.navigate('FirstSnap')}
         >
-          <Text style={[currentTypography.button.large, styles.continueButtonText]}>Continue</Text>
+          <Text style={[currentTypography.button.large, styles.buttonText]}>Continue</Text>
         </TouchableOpacity>
       )}
 
@@ -133,7 +205,7 @@ const PreferencesScreen = () => {
           });
         }}
       >
-        <Text style={[currentTypography.button.large, styles.continueButtonText]}>Logout</Text>
+        <Text style={[currentTypography.button.large, styles.buttonText]}>Logout</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -142,15 +214,12 @@ const PreferencesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#111827',
     padding: 24,
   },
   title: {
-    color: '#fff',
     marginBottom: 24,
   },
   sectionTitle: {
-    color: '#fff',
     marginBottom: 12,
   },
   modesContainer: {
@@ -167,14 +236,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   modeButtonTitle: {
-    color: '#fff',
     marginBottom: 4,
   },
   modeButtonDescription: {
     color: '#D1D5DB',
   },
   settingsContainer: {
-    backgroundColor: '#1F2937',
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
@@ -185,18 +252,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  switchLabel: {
-    color: '#D1D5DB',
-  },
   continueButton: {
-    backgroundColor: '#3B82F6',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 24,
   },
-  continueButtonText: {
-    color: '#fff',
+  buttonText: {
+    color: '#FFFFFF',
   },
   logoutButton: {
     backgroundColor: '#DC2626',
