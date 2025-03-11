@@ -7,7 +7,11 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Dimensions,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { typography } from '../styles/typography';
+import { gradients } from '../styles/gradients';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerStart, registerSuccess, registerFailure, resetStyle} from '../store/authSlice';
 import { authAPI } from '../services/api';
@@ -66,108 +70,159 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
+    <LinearGradient
+      colors={gradients.zoomer.primary}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      <View style={styles.content}>
+        <Text style={[styles.title, typography.zoomer.heading.large]}>Create Account</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={[styles.input, typography.zoomer.body.large]}
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+            placeholderTextColor="rgba(255,255,255,0.7)"
+          />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
+          <TextInput
+            style={[styles.input, typography.zoomer.body.large]}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            placeholderTextColor="rgba(255,255,255,0.7)"
+          />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+          <TextInput
+            style={[styles.input, typography.zoomer.body.large]}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            placeholderTextColor="rgba(255,255,255,0.7)"
+          />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
+          <TextInput
+            style={[styles.input, typography.zoomer.body.large]}
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            placeholderTextColor="rgba(255,255,255,0.7)"
+          />
+        </View>
 
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={handleRegister}
-        disabled={false}
-      >
-        {isLoading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Register</Text>
-        )}
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleRegister}
+          disabled={isLoading}
+        >
+          <LinearGradient
+            colors={gradients.zoomer.secondary}
+            style={styles.button}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={[styles.buttonText, typography.zoomer.button.large]}>Register</Text>
+            )}
+          </LinearGradient>
+        </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={styles.loginLink}
-        onPress={() => navigation.navigate('Login')}
-      >
-        <Text style={styles.loginText}>
-          Already have an account? Login here
-        </Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity
+          style={styles.loginLink}
+          onPress={() => navigation.navigate('Login')}
+        >
+          <Text style={[styles.loginText, typography.zoomer.body.regular]}>
+            Already have an account? Login here
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
   );
 };
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  content: {
+    flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#fff'
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center'
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 40,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+  },
+  inputContainer: {
+    width: '100%',
+    maxWidth: 400,
+    alignSelf: 'center',
   },
   input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 15,
+    height: 55,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 15,
+    paddingHorizontal: 20,
     marginBottom: 15,
-    fontSize: 16
+    color: '#fff',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   button: {
-    backgroundColor: '#007AFF',
-    height: 50,
-    borderRadius: 8,
+    height: 55,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20
+    marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+    width: '100%',
+    maxWidth: 400,
+    alignSelf: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold'
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   loginLink: {
-    marginTop: 20,
-    alignItems: 'center'
+    marginTop: 30,
+    alignItems: 'center',
   },
   loginText: {
-    color: '#007AFF',
-    fontSize: 16
+    color: '#fff',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   }
 });
 

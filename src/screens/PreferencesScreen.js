@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Switch, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { useDispatch } from 'react-redux';
+import { useNavigation, useRoute, } from '@react-navigation/native';
+import { useDispatch, useSelector, } from 'react-redux';
 import { fonts } from '../styles/typography';
 import { logout } from '../store/authSlice';
+import { setMode, selectMode } from '../store/settingsSlice';
 
 const PreferencesScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
-  const [interests, setInterests] = useState([]);
+  const currentMode = useSelector(selectMode);
   const [notificationSettings, setNotificationSettings] = useState({
     daily: false,
     streaks: false,
@@ -17,12 +18,8 @@ const PreferencesScreen = () => {
   });
   const [soundEffects, setSoundEffects] = useState(false);
 
-  const handleInterestToggle = (interest) => {
-    setInterests((prevInterests) =>
-      prevInterests.includes(interest)
-        ? prevInterests.filter((i) => i !== interest)
-        : [...prevInterests, interest]
-    );
+  const handleModeChange = (mode) => {
+    dispatch(setMode(mode));
   };
 
   const handleNotificationToggle = (type) => {
@@ -38,64 +35,105 @@ const PreferencesScreen = () => {
     navigation.navigate('FirstSnap');
   };
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Preferences</Text>
+  const renderPreferences = () => {
+    if (currentMode === 'zoomer') {
+      return (
+        <>
+          <Text style={styles.sectionTitle}>Quick Settings 🚀</Text>
+          <View style={styles.switchContainer}>
+            <Text style={[styles.switchLabel, styles.zoomerText]}>Notifications</Text>
+            <Switch
+              value={Object.values(notificationSettings).some(v => v)}
+              onValueChange={(value) => {
+                setNotificationSettings({
+                  daily: value,
+                  streaks: value,
+                  community: value,
+                });
+              }}
+            />
+          </View>
+          <View style={styles.switchContainer}>
+            <Text style={[styles.switchLabel, styles.zoomerText]}>Sound FX</Text>
+            <Switch
+              value={soundEffects}
+              onValueChange={() => setSoundEffects((prev) => !prev)}
+            />
+          </View>
+        </>
+      );
+    }
 
-      <Text style={styles.sectionTitle}>Interests</Text>
-      <View style={styles.interestsContainer}>
-        {['Gaming', 'Music', 'Movies', 'Books', 'Travel'].map((interest) => (
+    return (
+      <>
+        <Text style={styles.sectionTitle}>Notification Settings</Text>
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Daily Notifications</Text>
+          <Switch
+            value={notificationSettings.daily}
+            onValueChange={() => handleNotificationToggle('daily')}
+          />
+        </View>
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Streak Reminders</Text>
+          <Switch
+            value={notificationSettings.streaks}
+            onValueChange={() => handleNotificationToggle('streaks')}
+          />
+        </View>
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Community Updates</Text>
+          <Switch
+            value={notificationSettings.community}
+            onValueChange={() => handleNotificationToggle('community')}
+          />
+        </View>
+
+        <Text style={styles.sectionTitle}>Sound Effects</Text>
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Enable Sound Effects</Text>
+          <Switch
+            value={soundEffects}
+            onValueChange={() => setSoundEffects((prev) => !prev)}
+          />
+        </View>
+      </>
+    );
+  };
+
+  return (
+    <ScrollView contentContainerStyle={[
+      styles.container,
+      currentMode === 'zoomer' && styles.zoomerContainer
+    ]}>
+      <Text style={[styles.title, currentMode === 'zoomer' && styles.zoomerTitle]}>
+        {currentMode === 'zoomer' ? 'Settings ⚡' : 'Preferences'}
+      </Text>
+
+      <Text style={styles.sectionTitle}>App Mode</Text>
+      <View style={styles.modesContainer}>
+        {['zoomer', 'classic'].map((mode) => (
           <TouchableOpacity
-            key={interest}
+            key={mode}
             style={[
-              styles.interestButton,
-              interests.includes(interest) && styles.interestButtonSelected,
+              styles.modeButton,
+              currentMode === mode && styles.modeButtonSelected,
             ]}
-            onPress={() => handleInterestToggle(interest)}
+            onPress={() => handleModeChange(mode)}
           >
             <Text
               style={[
-                styles.interestButtonText,
-                interests.includes(interest) && styles.interestButtonTextSelected,
+                styles.modeButtonText,
+                currentMode === mode && styles.modeButtonTextSelected,
               ]}
             >
-              {interest}
+              {mode.charAt(0).toUpperCase() + mode.slice(1)}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <Text style={styles.sectionTitle}>Notification Settings</Text>
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Daily Notifications</Text>
-        <Switch
-          value={notificationSettings.daily}
-          onValueChange={() => handleNotificationToggle('daily')}
-        />
-      </View>
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Streak Reminders</Text>
-        <Switch
-          value={notificationSettings.streaks}
-          onValueChange={() => handleNotificationToggle('streaks')}
-        />
-      </View>
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Community Updates</Text>
-        <Switch
-          value={notificationSettings.community}
-          onValueChange={() => handleNotificationToggle('community')}
-        />
-      </View>
-
-      <Text style={styles.sectionTitle}>Sound Effects</Text>
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Enable Sound Effects</Text>
-        <Switch
-          value={soundEffects}
-          onValueChange={() => setSoundEffects((prev) => !prev)}
-        />
-      </View>
+      {renderPreferences()}
 
       {route.params?.fromOnboarding && (
         <TouchableOpacity
@@ -140,28 +178,29 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginBottom: 12,
   },
-  interestsContainer: {
+  modesContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    justifyContent: 'space-around',
     marginBottom: 24,
   },
-  interestButton: {
+  modeButton: {
     backgroundColor: '#1F2937',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 8,
-    marginRight: 8,
-    marginBottom: 8,
+    width: '45%',
+    alignItems: 'center',
   },
-  interestButtonSelected: {
+  modeButtonSelected: {
     backgroundColor: '#3B82F6',
   },
-  interestButtonText: {
+  modeButtonText: {
     fontFamily: fonts.righteous,
-    fontSize: 16,
+    fontSize: 18,
     color: '#D1D5DB',
+    textTransform: 'capitalize',
   },
-  interestButtonTextSelected: {
+  modeButtonTextSelected: {
     color: '#fff',
   },
   switchContainer: {
