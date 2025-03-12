@@ -5,8 +5,34 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const { S3Client } = require('@aws-sdk/client-s3');
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
+const { GetCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const { GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 dotenv.config();
+
+// Initialize AWS Clients
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  }
+});
+
+const ddbClient = new DynamoDBClient({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  }
+});
+
+// Create a DynamoDB Document client for easier interaction
+const docClient = DynamoDBDocumentClient.from(ddbClient);
 
 const app = express();
 app.use(express.json());
@@ -254,6 +280,81 @@ app.put('/api/user/preferences', authenticateToken, async (req, res) => {
     res.json(user.preferences);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// List all terms/lessons
+app.get('/api/terms', authenticateToken, async (req, res) => {
+  try {
+    const { category, difficulty } = req.query;
+    
+    // Scan command to get all terms (with optional filters)
+    const scanCommand = {
+      TableName: 'terms_table'
+    };
+
+    // Add filters if provided
+    if (category || difficulty) {
+      let filterExpression = [];
+      let expressionValues = {};
+
+      if (category) {
+        filterExpression.push('category = :category');
+        expressionValues[':category'] = category;
+      }
+      if (difficulty) {
+        filterExpression.push('difficulty = :difficulty');
+        expressionValues[':difficulty'] = difficulty;
+      }
+
+      if (filterExpression.length > 0) {
+        scanCommand.FilterExpression = filterExpression.join(' AND ');
+        scanCommand.ExpressionAttributeValues = expressionValues;
+      }
+    }
+
+    const { Items } = await docClient.send(new ScanCommand(scanCommand));
+    res.json(Items);
+
+  } catch (error) {
+    console.error('List terms error:', error);
+    res.status(500).json({ message: 'Error listing terms', error: error.message });
+  }
+});
+
+// Get video url and term details
+app.get('/api/videos/:termId', authenticateToken, async (req, res) => {
+  try {
+    const { termId } = req.params;
+
+    // Get term info from DynamoDB
+    const getCommand = new GetCommand({
+      TableName: 'terms_table',
+      Key: { term_id: termId }
+    });
+
+    const { Item } = await docClient.send(getCommand);
+    
+    if (!Item) {
+      return res.status(404).json({ message: 'Term not found' });
+    }
+
+    // Generate presigned URL for video
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET,
+      Key: Item.video_key
+    });
+
+    const videoUrl = await getSignedUrl(s3Client, getObjectCommand, { expiresIn: 3600 });
+
+    res.json({
+      ...Item,
+      videoUrl
+    });
+
+  } catch (error) {
+    console.error('Get video error:', error);
+    res.status(500).json({ message: 'Error getting video', error: error.message });
   }
 });
 
