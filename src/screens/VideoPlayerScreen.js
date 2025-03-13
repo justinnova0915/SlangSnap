@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { useSelector } from 'react-redux';
+import { Video } from 'expo-av';
+import { videoAPI } from '../services/api';
 import { fonts } from '../styles/typography';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
@@ -312,21 +314,77 @@ const useStyles = (mode) => {
   });
 };
 
-const VideoPlayerScreen = ({ navigation }) => {
+const VideoPlayerScreen = ({ navigation, route }) => {
+  const { termId } = route.params || { termId: "placeholder" };
   const mode = useSelector(state => state.settings.mode || 'classic');
-  const [isPlaying, setIsPlaying] = useState(false);
   const isZoomer = mode === 'zoomer';
   const styles = useStyles(mode);
+  
+  // Video state
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [showSubtitles, setShowSubtitles] = useState(true);
-  const [progress, setProgress] = useState(45); // Mock progress percentage
+  const [duration, setDuration] = useState(0);
+  const [position, setPosition] = useState(0);
+  
+  // Term data state
+  const [currentTerm, setCurrentTerm] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [video, setVideo] = useState(null);
 
-  const mockClips = [
-    { id: 1, title: 'On the ball', category: 'Business Communication', isPlaying: true },
-    { id: 2, title: 'Break the ice', category: 'Social Situations' },
-    { id: 3, title: 'Hit the ground running', category: 'Business Success' },
-    { id: 4, title: 'Think outside the box', category: 'Creative Thinking' },
-    { id: 5, title: 'Back to square one', category: 'Problem Solving' },
-  ];
+  // Helper functions
+  const formatTime = (millis) => {
+    if (!millis) return '0:00';
+    const totalSeconds = Math.floor(millis / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handlePlaybackStatusUpdate = (status) => {
+    if (status.isLoaded) {
+      setIsPlaying(status.isPlaying);
+      setDuration(status.durationMillis || 0);
+      setPosition(status.positionMillis || 0);
+      if (status.durationMillis) {
+        setProgress((status.positionMillis / status.durationMillis) * 100);
+      }
+    }
+  };
+
+  // Fetch terms for playlist
+  const [terms, setTerms] = useState([]);
+  useEffect(() => {
+    const loadTerms = async () => {
+      try {
+        const data = await videoAPI.getTerms();
+        setTerms(data);
+      } catch (err) {
+        console.error('Error loading terms:', err);
+      }
+    };
+    loadTerms();
+  }, []);
+
+  // Fetch current term data
+  useEffect(() => {
+    const loadTerm = async () => {
+      try {
+        setIsLoading(true);
+        const data = await videoAPI.getVideo(termId);
+        setCurrentTerm(data);
+        setVideo(data.videoUrl);
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Error loading term:', err);
+        setError(err.message);
+        setIsLoading(false);
+      }
+    };
+
+    loadTerm();
+  }, [termId]);
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -346,10 +404,19 @@ const VideoPlayerScreen = ({ navigation }) => {
 
   const renderVideoPlayer = () => (
     <View style={styles.videoContainer}>
-      <Image
-        source={{ uri: 'https://images.unsplash.com/photo-1600880292089-90a7e086ee0c' }}
-        style={styles.videoPreview}
-      />
+      {video ? (
+        <Video
+          source={{ uri: video }}
+          style={styles.videoPreview}
+          useNativeControls={false}
+          resizeMode="contain"
+          shouldPlay={isPlaying}
+          isLooping={false}
+          onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+        />
+      ) : (
+        <View style={[styles.videoPreview, { backgroundColor: '#000' }]} />
+      )}
       <View style={styles.videoOverlay}>
         <TouchableOpacity 
           style={styles.playButton}
@@ -368,8 +435,8 @@ const VideoPlayerScreen = ({ navigation }) => {
           <View style={[styles.progressFill, { width: `${progress}%` }]} />
         </View>
         <View style={styles.timeStamps}>
-          <Text style={styles.timeText}>0:07</Text>
-          <Text style={styles.timeText}>0:15</Text>
+          <Text style={styles.timeText}>{formatTime(position)}</Text>
+          <Text style={styles.timeText}>{formatTime(duration)}</Text>
         </View>
         <View style={styles.controlButtons}>
           <TouchableOpacity style={styles.controlButton}>
@@ -398,10 +465,10 @@ const VideoPlayerScreen = ({ navigation }) => {
         </Text>
       </TouchableOpacity>
 
-      {showSubtitles && (
+      {showSubtitles && currentTerm && (
         <View style={styles.subtitlesContainer}>
           <Text style={styles.subtitlesText}>
-            Sarah has always been on the ball with her deadlines!
+            {currentTerm.examples?.[0] || currentTerm.text}
           </Text>
         </View>
       )}
@@ -412,24 +479,25 @@ const VideoPlayerScreen = ({ navigation }) => {
     <View style={styles.playlistContainer}>
       <Text style={styles.playlistTitle}>Up Next</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.carousel}>
-        {mockClips.map((clip) => (
-          <View key={clip.id} style={styles.carouselItem}>
+        {terms.map((term) => (
+          <TouchableOpacity
+            key={term.term_id}
+            style={styles.carouselItem}
+            onPress={() => navigation.replace('VideoPlayer', { termId: term.term_id })}
+          >
             <View style={styles.thumbnailContainer}>
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1600880292089-90a7e086ee0c' }}
-                style={styles.thumbnail}
-              />
-              {clip.isPlaying && (
+              <View style={[styles.thumbnail, { backgroundColor: '#1A1A1A' }]} />
+              {term.term_id === termId && (
                 <View style={styles.nowPlayingBadge}>
                   <Text style={styles.nowPlayingText}>Now Playing</Text>
                 </View>
               )}
             </View>
             <View style={styles.clipInfo}>
-              <Text style={styles.clipTitle}>{clip.title}</Text>
-              <Text style={styles.clipCategory}>{clip.category}</Text>
+              <Text style={styles.clipTitle}>{term.text}</Text>
+              <Text style={styles.clipCategory}>{term.category}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
@@ -437,38 +505,48 @@ const VideoPlayerScreen = ({ navigation }) => {
 
   const renderIdiomCard = () => (
     <View style={styles.idiomCard}>
-      <View style={styles.idiomHeader}>
-        <Text style={styles.idiomTitle}>on the ball</Text>
-        <View style={styles.idiomActions}>
-          <TouchableOpacity style={styles.idiomActionButton}>
-            <FontAwesome5
-              name="bookmark"
-              size={isZoomer ? 20 : 16}
-              color={isZoomer ? "#FFFFFF" : "#6B7280"}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.idiomActionButton}>
-            <FontAwesome5
-              name="share-alt"
-              size={isZoomer ? 20 : 16}
-              color={isZoomer ? "#FFFFFF" : "#6B7280"}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <Text style={styles.idiomDescription}>
-        Alert, attentive, and efficient. Someone who is "on the ball" is responsive and aware of what is happening.
-      </Text>
-      <View style={styles.exampleContainer}>
-        <Text style={styles.exampleLabel}>Example:</Text>
-        <Text style={styles.exampleText}>
-          "Sarah is always <Text style={styles.highlightedText}>on the ball</Text> with her project deadlines."
-        </Text>
-      </View>
-      <View style={styles.tagContainer}>
-        <View style={styles.tag}><Text style={styles.tagText}>Business</Text></View>
-        <View style={styles.tag}><Text style={styles.tagText}>Work</Text></View>
-      </View>
+      {isLoading ? (
+        <Text style={styles.idiomDescription}>Loading...</Text>
+      ) : error ? (
+        <Text style={styles.idiomDescription}>Error: {error}</Text>
+      ) : currentTerm ? (
+        <>
+          <View style={styles.idiomHeader}>
+            <Text style={styles.idiomTitle}>{currentTerm.text}</Text>
+            <View style={styles.idiomActions}>
+              <TouchableOpacity style={styles.idiomActionButton}>
+                <FontAwesome5
+                  name="bookmark"
+                  size={isZoomer ? 20 : 16}
+                  color={isZoomer ? "#FFFFFF" : "#6B7280"}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.idiomActionButton}>
+                <FontAwesome5
+                  name="share-alt"
+                  size={isZoomer ? 20 : 16}
+                  color={isZoomer ? "#FFFFFF" : "#6B7280"}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Text style={styles.idiomDescription}>{currentTerm.definition}</Text>
+          {currentTerm.examples?.map((example, index) => (
+            <View key={index} style={styles.exampleContainer}>
+              <Text style={styles.exampleLabel}>Example {index + 1}:</Text>
+              <Text style={styles.exampleText}>{example}</Text>
+            </View>
+          ))}
+          <View style={styles.tagContainer}>
+            <View style={styles.tag}>
+              <Text style={styles.tagText}>{currentTerm.category}</Text>
+            </View>
+            <View style={styles.tag}>
+              <Text style={styles.tagText}>{currentTerm.difficulty}</Text>
+            </View>
+          </View>
+        </>
+      ) : null}
     </View>
   );
 

@@ -51,9 +51,16 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.error = null;
-      // Remove token from AsyncStorage
-      AsyncStorage.removeItem('token');
-      AsyncStorage.removeItem('user');
+      state.styleSelected = false;
+      // Remove all auth-related data
+      Promise.all([
+        AsyncStorage.removeItem('token'),
+        AsyncStorage.removeItem('user')
+      ]).then(() => {
+        console.log('[Auth] Cleared all auth data');
+      }).catch(error => {
+        console.error('[Auth] Error clearing data:', error);
+      });
     },
     clearError: (state) => {
       state.error = null;

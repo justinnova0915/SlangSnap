@@ -125,4 +125,30 @@ export const authAPI = {
   }
 };
 
+export const videoAPI = {
+  getTerms: async () => {
+    try {
+      console.log('Fetching available terms...');
+      const response = await api.get('/terms');
+      console.log('Terms response:', response.data);
+      return response.data;
+    } catch (error) {
+      logError(error);
+      throw error.response?.data?.message || 'Failed to get terms';
+    }
+  },
+
+  getVideo: async (termId) => {
+    try {
+      console.log('Fetching video for term:', termId);
+      const response = await api.get(`/videos/${termId}`);
+      console.log('Video response:', response.data);
+      return response.data;
+    } catch (error) {
+      logError(error);
+      throw error.response?.data?.message || 'Failed to get video';
+    }
+  }
+};
+
 export default api;
