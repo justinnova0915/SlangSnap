@@ -320,12 +320,23 @@ const VideoPlayerScreen = ({ navigation, route }) => {
   const isZoomer = mode === 'zoomer';
   const styles = useStyles(mode);
   
-  // Video state
+  // Video state and ref
+  const videoRef = React.useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showSubtitles, setShowSubtitles] = useState(true);
   const [duration, setDuration] = useState(0);
   const [position, setPosition] = useState(0);
+
+  const togglePlayback = async () => {
+    if (!videoRef.current) return;
+    
+    if (isPlaying) {
+      await videoRef.current.pauseAsync();
+    } else {
+      await videoRef.current.playAsync();
+    }
+  };
   
   // Term data state
   const [currentTerm, setCurrentTerm] = useState(null);
@@ -406,11 +417,11 @@ const VideoPlayerScreen = ({ navigation, route }) => {
     <View style={styles.videoContainer}>
       {video ? (
         <Video
+          ref={videoRef}
           source={{ uri: video }}
           style={styles.videoPreview}
           useNativeControls={false}
           resizeMode="contain"
-          shouldPlay={isPlaying}
           isLooping={false}
           onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
         />
@@ -420,7 +431,7 @@ const VideoPlayerScreen = ({ navigation, route }) => {
       <View style={styles.videoOverlay}>
         <TouchableOpacity 
           style={styles.playButton}
-          onPress={() => setIsPlaying(!isPlaying)}
+          onPress={togglePlayback}
         >
           <FontAwesome5 
             name={isPlaying ? "pause" : "play"} 

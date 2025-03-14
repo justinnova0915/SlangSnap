@@ -55,7 +55,8 @@ const authSlice = createSlice({
       // Remove all auth-related data
       Promise.all([
         AsyncStorage.removeItem('token'),
-        AsyncStorage.removeItem('user')
+        AsyncStorage.removeItem('user'),
+        AsyncStorage.removeItem('styleSelected')
       ]).then(() => {
         console.log('[Auth] Cleared all auth data');
       }).catch(error => {
@@ -67,9 +68,11 @@ const authSlice = createSlice({
     },
     stylePickerComplete: (state) => {
       state.styleSelected = true;
+      AsyncStorage.setItem('styleSelected', 'true');
     },
     resetStyle: (state) => {
       state.styleSelected = false;
+      AsyncStorage.removeItem('styleSelected');
     }
   }
 });

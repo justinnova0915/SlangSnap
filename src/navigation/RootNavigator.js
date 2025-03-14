@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MainNavigator from './MainNavigator';
 import AuthNavigator from './AuthNavigator';
-import { loginSuccess } from '../store/authSlice';
+import { loginSuccess, logout } from '../store/authSlice';
 
 const Stack = createStackNavigator();
 
@@ -14,17 +14,27 @@ const RootNavigator = () => {
   const dispatch = useDispatch();
   console.log('Auth State:', { token, isLoading, styleSelected });
   
+  // Force logout on mount
+  // useEffect(() => {
+  //   dispatch(logout());
+  // }, []);
+
   useEffect(() => {
     const loadStoredAuth = async () => {
       try {
         const storedToken = await AsyncStorage.getItem('token');
         const storedUser = await AsyncStorage.getItem('user');
+        const storedStyleSelected = await AsyncStorage.getItem('styleSelected');
         
         if (storedToken && storedUser) {
           dispatch(loginSuccess({
             token: storedToken,
             user: JSON.parse(storedUser)
           }));
+          
+          if (storedStyleSelected === 'true') {
+            dispatch(stylePickerComplete());
+          }
         }
       } catch (error) {
         console.error('Error loading stored auth:', error);
