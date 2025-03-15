@@ -3,6 +3,13 @@
 # dependencies
 node_modules/
 
+# Google Cloud credentials
+server/google-credentials.json
+
+# Temporary directories
+server/temp/
+temp/
+
 #reference material
 docs/
 

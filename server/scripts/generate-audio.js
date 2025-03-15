@@ -1,15 +1,20 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import textToSpeech from '@google-cloud/text-to-speech';
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const execPromise = promisify(exec);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Initialize Google Cloud Text-to-Speech client
+const ttsClient = new textToSpeech.TextToSpeechClient({
+  keyFilename: path.join(__dirname, '..', 'google-credentials.json')
+});
 
 // AWS clients initialization
 const s3Client = new S3Client({
@@ -35,26 +40,57 @@ const terms = [
   {
     term_id: 'on_the_ball',
     text: "She's always on the ball with her project deadlines.",
-    voice_id: 'Microsoft David Desktop', // Default Windows voice
+    voice: {
+      languageCode: 'en-US',
+      name: 'en-US-Neural2-F',
+      ssmlGender: 'FEMALE'
+    }
   },
-  // Add more terms as needed
+  {
+    term_id: 'on_the_ball_male',
+    text: "Our new manager is really on the ball with customer service.",
+    voice: {
+      languageCode: 'en-US',
+      name: 'en-US-Neural2-D',
+      ssmlGender: 'MALE'
+    }
+  },
+  {
+    term_id: 'on_the_ball_casual',
+    text: "Yeah, you gotta stay on the ball if you wanna succeed here.",
+    voice: {
+      languageCode: 'en-US',
+      name: 'en-US-Neural2-A',
+      ssmlGender: 'MALE'
+    }
+  }
 ];
 
-// We could later add more voices like:
-// 'Microsoft Zira Desktop' (female voice)
-// 'Microsoft Mark Desktop'
-// Check actual available voices in the PowerShell output
-
-async function generateAudio(text, outputPath, voiceId) {
-  console.log('Generating audio:', { text, outputPath, voiceId });
-  
-  const scriptPath = path.join(process.cwd(), 'scripts', 'generate-speech.ps1');
+async function generateAudio(text, outputPath, voice) {
+  console.log('Generating audio:', { text, outputPath, voice });
   
   try {
-    // Execute the PowerShell script with parameters
-    const command = `powershell -NoProfile -NonInteractive -File "${scriptPath}" -Text "${text}" -OutputPath "${outputPath}" -VoiceId "${voiceId || ''}"`;
+    // Configure the synthesis request
+    const request = {
+      input: { text },
+      voice: voice || {
+        languageCode: 'en-US',
+        name: 'en-US-Neural2-F',
+        ssmlGender: 'FEMALE'
+      },
+      audioConfig: {
+        audioEncoding: 'MP3',
+        pitch: 0,
+        speakingRate: 1
+      },
+    };
+
+    // Perform the text-to-speech request
+    const [response] = await ttsClient.synthesizeSpeech(request);
     
-    const { stdout, stderr } = await execPromise(command, { maxBuffer: 1024 * 1024 });
+    // Write the binary audio content to disk
+    await fs.writeFile(outputPath, response.audioContent, 'binary');
+    console.log('Audio content written to file:', outputPath);
     
     // Process stdout line by line
     if (stdout) {
@@ -130,10 +166,10 @@ async function main() {
       console.log('Text:', term.text);
       
       // Generate audio file
-      const outputPath = path.join(tempDir, `${term.term_id}.wav`);
+      const outputPath = path.join(tempDir, `${term.term_id}.mp3`); // Note: Changed to .mp3
       console.log('Output path:', outputPath);
       
-      await generateAudio(term.text, outputPath, term.voice_id);
+      await generateAudio(term.text, outputPath, term.voice);
       
       // Verify file exists and has content
       const stats = await fs.stat(outputPath);
