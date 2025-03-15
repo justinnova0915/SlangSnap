@@ -23,6 +23,33 @@ import { StyleTestScreen } from '../screens/StyleTestScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// Learn Stack Navigator
+function LearnNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="VideoPlayerMain" component={VideoPlayerScreen} />
+      <Stack.Screen
+        name="VideoPlayerDetail"
+        component={VideoPlayerScreen}
+        options={{
+          cardStyleInterpolator: ({ current, layouts }) => ({
+            cardStyle: {
+              transform: [
+                {
+                  translateX: current.progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [layouts.screen.width, 0],
+                  }),
+                },
+              ],
+            },
+          }),
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 const ONBOARDING_COMPLETE = 'onboarding_complete';
 
 // Zoomer Tab Navigator
@@ -45,7 +72,7 @@ function ZoomerTabNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Learn" component={VideoPlayerScreen} />
+      <Tab.Screen name="Learn" component={LearnNavigator} />
       <Tab.Screen name="Voice" component={VoiceRecordingScreen} />
       <Tab.Screen name="Stash" component={StashScreen} />
       <Tab.Screen name="Profile" component={SettingsScreen} />
@@ -73,7 +100,7 @@ function ClassicTabNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Learn" component={VideoPlayerScreen} />
+      <Tab.Screen name="Learn" component={LearnNavigator} />
       <Tab.Screen name="Voice" component={VoiceRecordingScreen} />
       <Tab.Screen name="Library" component={StashScreen} />
       <Tab.Screen name="Profile" component={SettingsScreen} />

@@ -541,7 +541,10 @@ const VideoPlayerScreen = ({ navigation, route }) => {
           <TouchableOpacity
             key={term.term_id}
             style={styles.carouselItem}
-            onPress={() => navigation.replace('VideoPlayer', { termId: term.term_id })}
+            onPress={() => navigation.navigate('Learn', {
+              screen: 'VideoPlayerDetail',
+              params: { termId: term.term_id }
+            })}
           >
             <View style={styles.thumbnailContainer}>
               <View style={[styles.thumbnail, { backgroundColor: '#1A1A1A' }]} />
