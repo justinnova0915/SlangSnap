@@ -1,16 +1,14 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const validator = require('validator');
-const { S3Client } = require('@aws-sdk/client-s3');
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
-const { GetCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
-const { GetObjectCommand } = require('@aws-sdk/client-s3');
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import validator from 'validator';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, GetCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 dotenv.config();
 
@@ -319,6 +317,41 @@ app.get('/api/terms', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('List terms error:', error);
     res.status(500).json({ message: 'Error listing terms', error: error.message });
+  }
+});
+
+// Get audio example url for a term
+app.get('/api/audio/:termId', authenticateToken, async (req, res) => {
+  try {
+    const { termId } = req.params;
+    
+    // Get audio info from DynamoDB
+    const getCommand = new GetCommand({
+      TableName: 'audio_examples',
+      Key: { term_id: termId }
+    });
+    
+    const { Item } = await docClient.send(getCommand);
+    if (!Item) {
+      return res.status(404).json({ message: 'Audio example not found' });
+    }
+    
+    // Generate presigned URL for audio file
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET,
+      Key: Item.audio_key
+    });
+    
+    const audioUrl = await getSignedUrl(s3Client, getObjectCommand, { expiresIn: 3600 });
+    res.json({
+      audioUrl,
+      voiceId: Item.voice_id,
+      createdAt: Item.created_at
+    });
+    
+  } catch (error) {
+    console.error('Get audio error:', error);
+    res.status(500).json({ message: 'Error getting audio example', error: error.message });
   }
 });
 

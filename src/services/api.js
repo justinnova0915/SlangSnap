@@ -135,6 +135,20 @@ export const authAPI = {
   }
 };
 
+export const audioAPI = {
+  getAudioExample: async (termId) => {
+    try {
+      console.log('Fetching audio example for term:', termId);
+      const response = await api.get(`/audio/${termId}`);
+      console.log('Audio example response:', response.data);
+      return response.data;
+    } catch (error) {
+      logError(error);
+      throw error.response?.data?.message || 'Failed to get audio example';
+    }
+  }
+};
+
 export const videoAPI = {
   getTerms: async () => {
     try {

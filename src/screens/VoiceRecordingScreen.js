@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { useSelector } from 'react-redux';
 import { fonts } from '../styles/typography';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
+import { audioAPI } from '../services/api';
 
 const useStyles = (mode) => {
   const isZoomer = mode === 'zoomer';
@@ -526,6 +528,51 @@ const VoiceRecordingScreen = () => {
   const [activeTab, setActiveTab] = useState('Record');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(7); // Mock recording time in seconds
+  const [isPlayingExample, setIsPlayingExample] = useState(false);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const soundRef = useRef(null);
+
+  const handleListenClick = async () => {
+    try {
+      setIsLoadingAudio(true);
+      
+      // Stop any playing audio
+      if (soundRef.current) {
+        await soundRef.current.unloadAsync();
+      }
+
+      // Get the audio URL
+      const { audioUrl } = await audioAPI.getAudioExample('on_the_ball'); // Hardcoded for now
+
+      // Load and play the audio
+      const { sound } = await Audio.Sound.createAsync({ uri: audioUrl });
+      soundRef.current = sound;
+      
+      setIsPlayingExample(true);
+      await sound.playAsync();
+      
+      // Handle playback finish
+      sound.setOnPlaybackStatusUpdate(status => {
+        if (status.didJustFinish) {
+          setIsPlayingExample(false);
+        }
+      });
+
+    } catch (error) {
+      console.error('Error playing audio example:', error);
+    } finally {
+      setIsLoadingAudio(false);
+    }
+  };
+
+  // Cleanup audio on unmount
+  React.useEffect(() => {
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.unloadAsync();
+      }
+    };
+  }, []);
 
   const tabs = ['Record', 'My Recordings', 'Featured'];
 
@@ -589,9 +636,23 @@ const VoiceRecordingScreen = () => {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.listenButton}>
-          <FontAwesome5 name="volume-up" size={20} color="white" />
-          <Text style={styles.buttonText}>Listen to Example</Text>
+        <TouchableOpacity
+          style={styles.listenButton}
+          onPress={handleListenClick}
+          disabled={isLoadingAudio}
+        >
+          {isLoadingAudio ? (
+            <ActivityIndicator color="white" style={{ marginRight: 8 }} />
+          ) : (
+            <FontAwesome5
+              name={isPlayingExample ? "stop" : "volume-up"}
+              size={20}
+              color="white"
+            />
+          )}
+          <Text style={styles.buttonText}>
+            {isPlayingExample ? "Stop" : "Listen to Example"}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.termActions}>
