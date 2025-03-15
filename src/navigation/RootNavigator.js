@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MainNavigator from './MainNavigator';
 import AuthNavigator from './AuthNavigator';
-import { loginSuccess, logout } from '../store/authSlice';
+import { loginSuccess, logout, stylePickerComplete } from '../store/authSlice';
 
 const Stack = createStackNavigator();
 
@@ -20,28 +20,26 @@ const RootNavigator = () => {
   // }, []);
 
   useEffect(() => {
-    const loadStoredAuth = async () => {
+    const validateAuth = async () => {
       try {
-        const storedToken = await AsyncStorage.getItem('token');
-        const storedUser = await AsyncStorage.getItem('user');
-        const storedStyleSelected = await AsyncStorage.getItem('styleSelected');
-        
-        if (storedToken && storedUser) {
-          dispatch(loginSuccess({
-            token: storedToken,
-            user: JSON.parse(storedUser)
-          }));
-          
-          if (storedStyleSelected === 'true') {
-            dispatch(stylePickerComplete());
+        // If we have a token in the store, validate it
+        if (token) {
+          try {
+            // Try to make an API call to validate the token
+            await authAPI.validateToken(token);
+          } catch (error) {
+            // If token validation fails, log the user out
+            console.log('Token validation failed:', error);
+            dispatch(logout());
           }
         }
       } catch (error) {
-        console.error('Error loading stored auth:', error);
+        console.error('Error validating auth:', error);
+        dispatch(logout());
       }
     };
 
-    loadStoredAuth();
+    validateAuth();
   }, []);
 
   // If we have a token, render the main app, otherwise render the auth flow

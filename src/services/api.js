@@ -122,6 +122,16 @@ export const authAPI = {
     } catch (error) {
       throw error.response?.data?.message || 'Failed to get profile';
     }
+  },
+
+  validateToken: async (token) => {
+    try {
+      // Use getProfile as a way to validate the token
+      await api.get('/user/profile');
+      return true; // If we get here, the token is valid
+    } catch (error) {
+      throw new Error('Token validation failed');
+    }
   }
 };
 

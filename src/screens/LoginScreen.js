@@ -77,7 +77,9 @@ const LoginScreen = ({ navigation }) => {
       console.log('6. Loading user preferences');
       await dispatch(loadPreferences());
       
+      // For login flow, automatically set style as selected since users would have already picked it
       dispatch(stylePickerComplete());
+      
       console.log('7. Login and preference load complete');
     } catch (error) {
       console.log('Login Error:', error);
