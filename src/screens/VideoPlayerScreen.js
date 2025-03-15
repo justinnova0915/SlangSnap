@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Dimensions, Animated } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Video } from 'expo-av';
 import { videoAPI } from '../services/api';
@@ -322,11 +322,52 @@ const VideoPlayerScreen = ({ navigation, route }) => {
   
   // Video state and ref
   const videoRef = React.useRef(null);
+  const fadeAnim = React.useRef(new Animated.Value(1)).current;
+  const controlsTimeoutRef = React.useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showSubtitles, setShowSubtitles] = useState(true);
   const [duration, setDuration] = useState(0);
   const [position, setPosition] = useState(0);
+  
+  const showControls = useCallback(() => {
+    // Clear any existing timeout
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+
+    // Show controls
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+
+    // Set timeout to hide controls after 3 seconds if video is playing
+    if (isPlaying) {
+      controlsTimeoutRef.current = setTimeout(() => {
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      }, 3000);
+    }
+  }, [fadeAnim, isPlaying]);
+
+  // Show controls when playback state changes
+  useEffect(() => {
+    showControls();
+  }, [isPlaying, showControls]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const togglePlayback = async () => {
     if (!videoRef.current) return;
@@ -414,7 +455,11 @@ const VideoPlayerScreen = ({ navigation, route }) => {
   );
 
   const renderVideoPlayer = () => (
-    <View style={styles.videoContainer}>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.videoContainer}
+      onPress={showControls}
+    >
       {video ? (
         <Video
           ref={videoRef}
@@ -428,20 +473,20 @@ const VideoPlayerScreen = ({ navigation, route }) => {
       ) : (
         <View style={[styles.videoPreview, { backgroundColor: '#000' }]} />
       )}
-      <View style={styles.videoOverlay}>
-        <TouchableOpacity 
+      <Animated.View style={[styles.videoOverlay, { opacity: fadeAnim }]}>
+        <TouchableOpacity
           style={styles.playButton}
           onPress={togglePlayback}
         >
-          <FontAwesome5 
-            name={isPlaying ? "pause" : "play"} 
-            size={24} 
-            color="white" 
+          <FontAwesome5
+            name={isPlaying ? "pause" : "play"}
+            size={24}
+            color="white"
           />
         </TouchableOpacity>
-      </View>
+      </Animated.View>
       
-      <View style={styles.videoControls}>
+      <Animated.View style={[styles.videoControls, { opacity: fadeAnim }]}>
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: `${progress}%` }]} />
         </View>
@@ -460,21 +505,23 @@ const VideoPlayerScreen = ({ navigation, route }) => {
             <FontAwesome5 name="forward" size={16} color="white" />
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
 
-      <TouchableOpacity 
-        style={styles.subtitleToggle}
-        onPress={() => setShowSubtitles(!showSubtitles)}
-      >
-        <FontAwesome5 
-          name="closed-captioning" 
-          size={14} 
-          color={showSubtitles ? "#2563EB" : "#6B7280"} 
-        />
-        <Text style={styles.subtitleToggleText}>
-          CC {showSubtitles ? 'ON' : 'OFF'}
-        </Text>
-      </TouchableOpacity>
+      <Animated.View style={[styles.subtitleToggle, { opacity: fadeAnim }]}>
+        <TouchableOpacity
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+          onPress={() => setShowSubtitles(!showSubtitles)}
+        >
+          <FontAwesome5
+            name="closed-captioning"
+            size={14}
+            color={showSubtitles ? "#2563EB" : "#6B7280"}
+          />
+          <Text style={styles.subtitleToggleText}>
+            CC {showSubtitles ? 'ON' : 'OFF'}
+          </Text>
+        </TouchableOpacity>
+      </Animated.View>
 
       {showSubtitles && currentTerm && (
         <View style={styles.subtitlesContainer}>
@@ -483,7 +530,7 @@ const VideoPlayerScreen = ({ navigation, route }) => {
           </Text>
         </View>
       )}
-    </View>
+    </TouchableOpacity>
   );
 
   const renderPlaylist = () => (
