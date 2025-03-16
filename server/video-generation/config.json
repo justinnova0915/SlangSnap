@@ -1,0 +1,40 @@
+{
+  "model": {
+    "path": "models/svd_xt.safetensors",
+    "type": "svd_xt",
+    "device": "cuda",
+    "num_frames": 14,
+    "fps": 7
+  },
+  "generation": {
+    "default_style": "photorealistic, high quality, detailed",
+    "video_length": 4,
+    "resolution": {
+      "width": 1024,
+      "height": 576
+    }
+  },
+  "storage": {
+    "temp_dir": "temp",
+    "output_dir": "output",
+    "s3_bucket": "slangsnap-videos",
+    "s3_prefix": "idioms/"
+  },
+  "presets": {
+    "casual": {
+      "style": "casual, modern, everyday life scene",
+      "fps": 7,
+      "num_frames": 14
+    },
+    "professional": {
+      "style": "professional, corporate, business setting",
+      "fps": 7,
+      "num_frames": 14
+    },
+    "educational": {
+      "style": "clear, educational, easy to understand",
+      "fps": 7,
+      "num_frames": 14
+    }
+  }
+}

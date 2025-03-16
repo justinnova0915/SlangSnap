@@ -17,12 +17,38 @@ const ttsClient = new textToSpeech.TextToSpeechClient({
 });
 
 // AWS clients initialization
-const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  }
+const loadAwsConfig = () => {
+  const hasCredentials = process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY;
+  
+  console.log('AWS Environment Variables Status:', {
+    hasCredentials,
+    region: process.env.AWS_REGION || 'us-east-2'
+  });
+
+  return {
+    region: process.env.AWS_REGION || 'us-east-2',
+    credentials: hasCredentials ? {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    } : undefined
+  };
+};
+
+// Initialize S3 client if credentials are available
+let s3Client;
+try {
+  s3Client = new S3Client(loadAwsConfig());
+  console.log('S3 client initialized');
+} catch (error) {
+  console.warn('Failed to initialize S3 client:', error.message);
+  s3Client = null;
+}
+
+// Log AWS configuration for debugging
+console.log('AWS Configuration:', {
+  region: 'us-east-2',
+  hasAccessKey: !!process.env.AWS_ACCESS_KEY_ID,
+  hasSecretKey: !!process.env.AWS_SECRET_ACCESS_KEY
 });
 
 const ddbClient = new DynamoDBClient({
@@ -39,37 +65,25 @@ const docClient = DynamoDBDocumentClient.from(ddbClient);
 const terms = [
   {
     term_id: 'on_the_ball',
-    text: "She's always on the ball with her project deadlines.",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla est purus, ultrices in porttitor in, accumsan non quam. Nam consectetur porttitor rhoncus. Curabitur eu est et leo feugiat auctor vel quis lorem. Ut et ligula dolor, sit amet consequat lorem. Aliquam porta eros sed velit imperdiet egestas. Maecenas tempus eros ut diam ullamcorper id dictum libero tempor. Donec quis augue quis magna condimentum lobortis. Quisque imperdiet ipsum vel magna viverra rutrum. Cras viverra molestie urna, vitae vestibulum turpis varius id. Nulla facilisi",
     voice: {
       languageCode: 'en-US',
       name: 'en-US-Neural2-F',
       ssmlGender: 'FEMALE'
     }
-  },
-  {
-    term_id: 'on_the_ball_male',
-    text: "Our new manager is really on the ball with customer service.",
-    voice: {
-      languageCode: 'en-US',
-      name: 'en-US-Neural2-D',
-      ssmlGender: 'MALE'
-    }
-  },
-  {
-    term_id: 'on_the_ball_casual',
-    text: "Yeah, you gotta stay on the ball if you wanna succeed here.",
-    voice: {
-      languageCode: 'en-US',
-      name: 'en-US-Neural2-A',
-      ssmlGender: 'MALE'
-    }
   }
 ];
 
-async function generateAudio(text, outputPath, voice) {
+export async function generateAudio(text, outputPath, voice) {
   console.log('Generating audio:', { text, outputPath, voice });
   
   try {
+    // Verify AWS credentials are loaded
+    const credentials = await s3Client.config.credentials();
+    if (!credentials) {
+      throw new Error('AWS credentials not loaded');
+    }
+    console.log('AWS credentials verified');
     // Configure the synthesis request
     const request = {
       input: { text },
@@ -92,21 +106,6 @@ async function generateAudio(text, outputPath, voice) {
     await fs.writeFile(outputPath, response.audioContent, 'binary');
     console.log('Audio content written to file:', outputPath);
     
-    // Process stdout line by line
-    if (stdout) {
-      stdout.split('\n').forEach(line => {
-        if (line.trim()) console.log('PS >', line.trim());
-      });
-    }
-    
-    // Process stderr and throw if any errors
-    if (stderr) {
-      stderr.split('\n').forEach(line => {
-        if (line.trim()) console.error('PS Error >', line.trim());
-      });
-      throw new Error('PowerShell script reported errors');
-    }
-    
     // Double check file exists and has content
     const stats = await fs.stat(outputPath);
     console.log(`Generated audio file size: ${stats.size} bytes`);
@@ -114,6 +113,12 @@ async function generateAudio(text, outputPath, voice) {
     if (stats.size === 0) {
       throw new Error('Generated audio file is empty');
     }
+
+    // Upload to S3
+    const s3Key = `audio-examples/${path.basename(outputPath)}`;
+    await uploadToS3(outputPath, s3Key);
+    
+    return s3Key;
   } catch (error) {
     console.error('Speech generation error:', error);
     throw error;
@@ -121,16 +126,28 @@ async function generateAudio(text, outputPath, voice) {
 }
 
 async function uploadToS3(filePath, key) {
-  const fileContent = await fs.readFile(filePath);
-  
-  const command = new PutObjectCommand({
-    Bucket: process.env.S3_BUCKET,
-    Key: key,
-    Body: fileContent,
-    ContentType: 'audio/wav'
-  });
-  
-  return s3Client.send(command);
+  if (!s3Client) {
+    console.log('S3 client not available - skipping upload');
+    return null;
+  }
+
+  try {
+    const fileContent = await fs.readFile(filePath);
+    
+    const command = new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET,
+      Key: key,
+      Body: fileContent,
+      ContentType: 'audio/mp3'
+    });
+    
+    await s3Client.send(command);
+    console.log('File uploaded to S3 successfully');
+    return key;
+  } catch (error) {
+    console.error('Error uploading to S3:', error.message);
+    return null;
+  }
 }
 
 async function createDynamoRecord(termId, audioKey) {
@@ -140,7 +157,7 @@ async function createDynamoRecord(termId, audioKey) {
       term_id: termId,
       audio_key: audioKey,
       created_at: new Date().toISOString(),
-      voice_id: 'en-US-Jenny'
+      voice_id: 'en-US-Jenny' 
     }
   });
   

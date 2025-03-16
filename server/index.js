@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import { generateVideo } from './scripts/setup-video-generation.js';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
@@ -388,6 +389,83 @@ app.get('/api/videos/:termId', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Get video error:', error);
     res.status(500).json({ message: 'Error getting video', error: error.message });
+  }
+});
+// Generate video for idiom
+app.post('/api/videos/generate', authenticateToken, async (req, res) => {
+  try {
+    const { idiom, context, style } = req.body;
+
+    // Validate input
+    if (!idiom || !context || !style) {
+      return res.status(400).json({
+        message: 'Missing required fields: idiom, context, and style are required'
+      });
+    }
+
+    // Start video generation
+    const result = await generateVideo({
+      idiom,
+      context,
+      style,
+      outputPath: 'server/temp'
+    });
+
+    res.json({
+      message: 'Video generation started',
+      id: result.id,
+      status: 'processing',
+      checkStatusUrl: `/api/videos/status/${result.id}`
+    });
+
+  } catch (error) {
+    console.error('Video generation error:', error);
+    res.status(500).json({
+      message: 'Error starting video generation',
+      error: error.message
+    });
+  }
+});
+
+// Check video generation status
+app.get('/api/videos/status/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Get video status from DynamoDB
+    const getCommand = new GetCommand({
+      TableName: 'IdiomVideos',
+      Key: { id }
+    });
+
+    const { Item } = await docClient.send(getCommand);
+    
+    if (!Item) {
+      return res.status(404).json({
+        message: 'Video not found'
+      });
+    }
+
+    // If video is complete, include the URL
+    if (Item.status === 'completed') {
+      res.json({
+        status: Item.status,
+        videoUrl: Item.videoUrl,
+        createdAt: Item.createdAt
+      });
+    } else {
+      res.json({
+        status: Item.status,
+        message: Item.status === 'failed' ? Item.errorMessage : 'Video generation in progress'
+      });
+    }
+
+  } catch (error) {
+    console.error('Check video status error:', error);
+    res.status(500).json({
+      message: 'Error checking video status',
+      error: error.message
+    });
   }
 });
 
